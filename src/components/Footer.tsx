@@ -6,7 +6,6 @@ export default function Footer() {
     <footer className="bg-amber-100 border-t border-amber-200">
       <div className="container mx-auto px-6 py-8">
         <div className="flex flex-col items-center text-center md:flex-row md:justify-between md:text-left">
-          {/* Brand and Copyright */}
           <div className="mb-6 md:mb-0">
             <Link
               to="/"
@@ -19,7 +18,6 @@ export default function Footer() {
             <p className="mt-1 text-sm text-gray-500">Made with 🧡 by LaVie</p>
           </div>
 
-          {/* Links and Socials */}
           <div className="flex flex-col items-center md:items-end">
             <div className="flex gap-6">
               <Link to="/about" className="text-gray-600 transition-colors hover:text-blue-600">

@@ -74,7 +74,6 @@ export default function PaymentMethodsAdmin() {
           </p>
         </div>
 
-        {/* Create Form */}
         <form onSubmit={handleCreate} className="mt-8 rounded-lg bg-white p-6 shadow-sm">
           <h2 className="text-lg font-semibold text-gray-800">Add New Method</h2>
           <div className="mt-4 flex flex-col gap-4 sm:flex-row">
@@ -96,7 +95,6 @@ export default function PaymentMethodsAdmin() {
           {createMutation.isError && <p className="mt-2 text-sm text-red-500">{createMutation.error.message}</p>}
         </form>
 
-        {/* Methods List */}
         <div className="mt-8 flow-root">
           <div className="inline-block min-w-full py-2 align-middle">
             <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg">

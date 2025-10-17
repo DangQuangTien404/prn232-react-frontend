@@ -25,7 +25,6 @@ function App() {
   const user = useUser((s) => s.user);
   const setUser = useUser((s) => s.setUser);
 
-  // Debug log
   console.log("App component rendered, current user:", user);
 
   if ((!user && Cookies.get("token")) || (user && !Cookies.get("token"))) {

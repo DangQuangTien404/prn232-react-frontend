@@ -46,14 +46,6 @@ export default function NavBar() {
         </Link>
 
         <div className="flex items-center gap-12">
-          {/* <Link
-            to="/slides"
-            className="flex justify-center items-center gap-1 font-medium text-gray-600 transition-colors hover:text-blue-600"
-          >
-            <BookMarked />
-            Slides
-          </Link> */}
-
           <Link
             to="/explore"
             className="flex items-center gap-2 font-medium text-gray-600 transition-colors hover:text-blue-600"

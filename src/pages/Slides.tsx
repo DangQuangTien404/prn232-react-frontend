@@ -14,7 +14,6 @@ export default function Slides() {
   
   const teacherId = userId ? Number(userId) : undefined;
   
-  // Use different hooks based on whether userId is provided
   const { 
     data: teacherSlides, 
     isLoading: isLoadingTeacherSlides, 
@@ -29,7 +28,6 @@ export default function Slides() {
     error: errorPublicSlides 
   } = usePublicSlides();
   
-  // Determine which data to use
   const isViewingSpecificUser = !!userId;
   const slides = isViewingSpecificUser ? teacherSlides : publicSlides;
   const isLoading = isViewingSpecificUser ? isLoadingTeacherSlides : isLoadingPublicSlides;
@@ -43,7 +41,6 @@ export default function Slides() {
   const [editFormData, setEditFormData] = useState<Partial<SlideUpdateData>>({});
   const [editFile, setEditFile] = useState<File | null>(null);
   
-  // Popup states
   const [selectedSlide, setSelectedSlide] = useState<SlideWithTeacher | null>(null);
   const [showSlideDetail, setShowSlideDetail] = useState(false);
 
@@ -111,7 +108,6 @@ export default function Slides() {
   };
 
   const handleViewSlide = (slide: Slide | SlideWithTeacher) => {
-    // Convert Slide to SlideWithTeacher if needed
     const slideWithTeacher = 'teacher' in slide 
       ? slide as SlideWithTeacher 
       : { ...slide, teacher: { id: slide.teacherId, name: 'Unknown Teacher', email: '', role: '', grade: 0, isDeleted: false } } as SlideWithTeacher;
@@ -170,7 +166,6 @@ export default function Slides() {
             {slides.map((slide) => (
               <div key={slide.id} className={cn("flex flex-col overflow-hidden rounded-lg bg-white shadow-lg transition-all", { "ring-2 ring-blue-500": editingSlideId === slide.id })}>
                 {editingSlideId === slide.id ? (
-                  // EDIT VIEW
                   <form onSubmit={handleSave} className="flex h-full flex-col">
                     <div className="flex-grow space-y-4 p-6">
                       <div>
@@ -223,7 +218,6 @@ export default function Slides() {
                     </div>
                   </form>
                 ) : (
-                  // DISPLAY VIEW
                   <>
                     <div className="flex-grow p-6">
                       <div className="flex items-center justify-between">
@@ -243,7 +237,6 @@ export default function Slides() {
                         <div className="flex items-center gap-2"><GraduationCap size={16} className="text-gray-400" /><span>Grade: {slide.grade || "All Levels"}</span></div>
                         <div className="flex items-center gap-2"><Calendar size={16} className="text-gray-400" /><span>Uploaded: {formatDate(slide.createdAt)}</span></div>
                         <div className="flex items-center gap-2"><DollarSign size={16} className="text-gray-400" /><span>Price: ${slide.price.toFixed(2)}</span></div>
-                        {/* Show teacher info for public slides */}
                         {!isViewingSpecificUser && 'teacher' in slide && (
                           <div className="flex items-center gap-2">
                             <User size={16} className="text-gray-400" />
@@ -290,7 +283,6 @@ export default function Slides() {
         )}
       </div>
       
-      {/* Popup Components */}
       <SlideDetailPopup
         slide={selectedSlide}
         isOpen={showSlideDetail}

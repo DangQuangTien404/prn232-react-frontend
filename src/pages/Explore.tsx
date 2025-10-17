@@ -23,12 +23,10 @@ import { useProfile } from "../hooks/useAuth";
 import { Dialog, Transition } from '@headlessui/react'
 import { usePurchaseHistory } from "src/hooks/usePayment";
 
-// Helper function to format date
 const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 };
 
-// Helper function to get file type
 const getFileType = (contentType: string | null) => {
     if (!contentType) return "File";
     if (contentType.includes("pdf")) return "PDF";
@@ -126,7 +124,9 @@ const SlideDetailModal = ({ slide, isOpen, onClose }: { slide: SlideWithTeacher 
 }
 
 
-const SlideCard = ({ slide, currentUser, onAddToCart, onViewDetails, isPurchased }: { slide: SlideWithTeacher, currentUser: any, onAddToCart: (slide: SlideWithTeacher) => void, onViewDetails: (slide: SlideWithTeacher) => void, isPurchased: boolean }) => {
+import { type User } from "src/hooks/useAuth";
+
+const SlideCard = ({ slide, currentUser, onAddToCart, onViewDetails, isPurchased }: { slide: SlideWithTeacher, currentUser: User | null | undefined, onAddToCart: (slide: SlideWithTeacher) => void, onViewDetails: (slide: SlideWithTeacher) => void, isPurchased: boolean }) => {
   const { items: cartItems } = useCart();
   const isInCart = cartItems.some(item => item.id === slide.id);
   const canPurchase = currentUser?.role === 'Student' && currentUser?.id !== slide.teacher.id;
@@ -260,7 +260,6 @@ export default function Explore() {
   return (
     <div className="min-h-screen bg-amber-50">
       <div className="container mx-auto px-4 py-24 sm:px-6 lg:px-8">
-        {/* Header */}
         <div className="pb-12 text-center">
           <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl">Explore Marketplace</h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-500">
@@ -268,7 +267,6 @@ export default function Explore() {
           </p>
         </div>
 
-        {/* Filters */}
         <div className="mb-10 flex flex-col items-center justify-between gap-6 rounded-xl bg-white/60 p-4 shadow-sm backdrop-blur-sm sm:flex-row">
           <div className="relative w-full sm:w-auto sm:flex-grow">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
@@ -291,7 +289,6 @@ export default function Explore() {
           </select>
         </div>
 
-        {/* Slides Grid */}
         {filteredAndSortedSlides.length > 0 ? (
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filteredAndSortedSlides.map((slide) => (
