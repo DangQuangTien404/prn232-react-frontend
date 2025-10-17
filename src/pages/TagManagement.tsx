@@ -29,7 +29,7 @@ export default function TagManagement() {
 
   useEffect(() => {
     if (tagList.isError) console.log(tagList.error);
-  }, [tagList.isError]);
+  }, [tagList.isError, tagList.error]);
 
   const handleEdit = async (id: number, newName: string) => {
     await updateTag.mutateAsync({ id, name: newName });

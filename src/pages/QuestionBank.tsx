@@ -43,7 +43,7 @@ export default function QuestionBank() {
   useEffect(() => {
     if (tagList.isError) console.log(tagList.error);
     if (questionList.isError) console.log(questionList.error);
-  }, [tagList.isError, questionList.isError]);
+  }, [tagList.isError, questionList.isError, tagList.error, questionList.error]);
 
   return (
     <div className="pt-16 relative bg-slate-50 w-full min-h-screen overflow-hidden">

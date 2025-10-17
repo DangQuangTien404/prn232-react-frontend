@@ -11,7 +11,7 @@ type Feedback = {
 } | null;
 
 const USERS_PER_PAGE = 10;
-const gradeOptions = Array.from({ length: 12 }, (_, i) => i + 1); // Grade options 1-12
+const gradeOptions = Array.from({ length: 12 }, (_, i) => i + 1);
 
 export default function Admin() {
   const { data: currentUser } = useProfile();

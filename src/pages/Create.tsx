@@ -33,7 +33,6 @@ import { cn } from "src/utils/cn";
 import { useCreateSlideMutation } from "src/hooks/useSlides";
 import PptxGenJS from "pptxgenjs";
 
-// Types
 interface SlideElement {
   id: string;
   type: 'text' | 'image' | 'shape' | 'table' | 'graphic';
@@ -62,6 +61,13 @@ interface Slide {
   backgroundColor: string;
 }
 
+interface PptxElementProps {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
 export default function Create() {
   const canvasRef = useRef<HTMLDivElement>(null);
   const initialSlides = [
@@ -74,7 +80,6 @@ export default function Create() {
   
   const [slides, setSlides] = useState<Slide[]>(initialSlides);
   
-  // Debug: Log when slides state changes
   useEffect(() => {
     console.log('Slides state changed:', slides.length, slides);
   }, [slides]);
@@ -105,7 +110,13 @@ export default function Create() {
   const currentSlide = slides[currentSlideIndex];
   const createSlideMutation = useCreateSlideMutation();
 
-  // Add element to slide
+  const saveToHistory = useCallback((newSlides: Slide[]) => {
+    const newHistory = history.slice(0, historyIndex + 1);
+    newHistory.push(newSlides);
+    setHistory(newHistory);
+    setHistoryIndex(newHistory.length - 1);
+  }, [history, historyIndex]);
+
   const addElement = useCallback((type: SlideElement['type'], textStyle?: 'heading' | 'subheading' | 'body', symbol?: string) => {
     let content = '';
     let fontSize = 16;
@@ -113,7 +124,6 @@ export default function Create() {
     
     if (type === 'text') {
       if (symbol) {
-        // Math symbol
         content = symbol;
         fontSize = 48;
         fontWeight = 'bold';
@@ -175,17 +185,8 @@ export default function Create() {
     setSlides(newSlides);
     setSelectedElement(newElement.id);
     saveToHistory(newSlides);
-  }, [slides, currentSlideIndex]);
+  }, [slides, currentSlideIndex, saveToHistory]);
 
-  // Save to history for undo/redo
-  const saveToHistory = useCallback((newSlides: Slide[]) => {
-    const newHistory = history.slice(0, historyIndex + 1);
-    newHistory.push(newSlides);
-    setHistory(newHistory);
-    setHistoryIndex(newHistory.length - 1);
-  }, [history, historyIndex]);
-
-  // Undo
   const undo = useCallback(() => {
     if (historyIndex > 0) {
       setHistoryIndex(historyIndex - 1);
@@ -193,7 +194,6 @@ export default function Create() {
     }
   }, [historyIndex, history]);
 
-  // Redo
   const redo = useCallback(() => {
     if (historyIndex < history.length - 1) {
       setHistoryIndex(historyIndex + 1);
@@ -201,13 +201,11 @@ export default function Create() {
     }
   }, [historyIndex, history]);
 
-  // Handle element selection
   const handleElementClick = (elementId: string) => {
     setSelectedElement(elementId);
     const element = currentSlide.elements.find(el => el.id === elementId);
     if (element?.type === 'text') {
       setShowTextToolbar(true);
-      // Start editing text
       const newSlides = slides.map((slide, index) => {
         if (index === currentSlideIndex) {
           return {
@@ -227,12 +225,10 @@ export default function Create() {
     }
   };
 
-  // Handle text editing with auto-resize
   const handleTextEdit = (elementId: string, newContent: string) => {
     const element = currentSlide.elements.find(el => el.id === elementId);
     if (!element) return;
 
-    // Create a temporary div to measure text dimensions
     const tempDiv = document.createElement('div');
     tempDiv.style.position = 'absolute';
     tempDiv.style.visibility = 'hidden';
@@ -250,7 +246,6 @@ export default function Create() {
     
     document.body.appendChild(tempDiv);
     
-    // Calculate required height
     const requiredHeight = Math.max(30, tempDiv.scrollHeight);
     document.body.removeChild(tempDiv);
 
@@ -274,7 +269,6 @@ export default function Create() {
     setSlides(newSlides);
   };
 
-  // Handle text edit end
   const handleTextEditEnd = (elementId: string) => {
     const newSlides = slides.map((slide, index) => {
       if (index === currentSlideIndex) {
@@ -291,11 +285,9 @@ export default function Create() {
     });
     setSlides(newSlides);
     saveToHistory(newSlides);
-    // Keep text toolbar visible even after editing ends
   };
 
-  // Handle text formatting
-  const updateTextStyle = (property: string, value: any) => {
+  const updateTextStyle = (property: string, value: string | number | boolean) => {
     if (!selectedElement) return;
     
     const newSlides = slides.map((slide, index) => {
@@ -320,7 +312,6 @@ export default function Create() {
     setSlides(newSlides);
     saveToHistory(newSlides);
     
-    // Restore selection after style update
     setTimeout(() => {
       const textareas = document.querySelectorAll('textarea');
       const activeTextarea = Array.from(textareas).find(ta => 
@@ -334,12 +325,10 @@ export default function Create() {
     }, 50);
   };
 
-  // Get current text element
   const getCurrentTextElement = () => {
     return currentSlide.elements.find(el => el.id === selectedElement);
   };
 
-  // Handle resize start
   const handleResizeStart = (e: React.MouseEvent, elementId: string, handle: string) => {
     e.preventDefault();
     e.stopPropagation();
@@ -351,32 +340,31 @@ export default function Create() {
     const element = currentSlide.elements.find(el => el.id === elementId);
     
     if (element && canvasRect) {
-      // Calculate offset based on the resize handle position
       let offsetX = 0;
       let offsetY = 0;
       
       switch (handle) {
-        case 'se': // Southeast - offset from element's right-bottom corner
+        case 'se':
           offsetX = e.clientX - canvasRect.left - (element.x + element.width);
           offsetY = e.clientY - canvasRect.top - (element.y + element.height);
           break;
-        case 'sw': // Southwest - offset from element's left-bottom corner
+        case 'sw':
           offsetX = e.clientX - canvasRect.left - element.x;
           offsetY = e.clientY - canvasRect.top - (element.y + element.height);
           break;
-        case 'ne': // Northeast - offset from element's right-top corner
+        case 'ne':
           offsetX = e.clientX - canvasRect.left - (element.x + element.width);
           offsetY = e.clientY - canvasRect.top - element.y;
           break;
-        case 'nw': // Northwest - offset from element's left-top corner
+        case 'nw':
           offsetX = e.clientX - canvasRect.left - element.x;
           offsetY = e.clientY - canvasRect.top - element.y;
           break;
-        case 'e': // East - offset from element's right side
+        case 'e':
           offsetX = e.clientX - canvasRect.left - (element.x + element.width);
           offsetY = e.clientY - canvasRect.top - element.y;
           break;
-        case 'w': // West - offset from element's left side
+        case 'w':
           offsetX = e.clientX - canvasRect.left - element.x;
           offsetY = e.clientY - canvasRect.top - element.y;
           break;
@@ -389,11 +377,9 @@ export default function Create() {
     }
   };
 
-  // Handle resize with throttling for smooth performance
   const handleResize = useCallback((e: MouseEvent) => {
     if (!isResizing || !selectedElement || !resizeHandle) return;
     
-    // Throttle resize updates for smooth performance
     requestAnimationFrame(() => {
     
     const canvasRect = canvasRef.current?.getBoundingClientRect();
@@ -407,54 +393,48 @@ export default function Create() {
     let newElementX = element.x;
     let newElementY = element.y;
     
-    // Calculate new dimensions based on resize handle
     switch (resizeHandle) {
-      case 'se': // Southeast - resize from right-bottom corner
+      case 'se':
         newWidth = Math.max(50, e.clientX - canvasRect.left - element.x - dragOffset.x);
         newHeight = Math.max(30, e.clientY - canvasRect.top - element.y - dragOffset.y);
         break;
-      case 'sw': // Southwest - resize from left-bottom corner
+      case 'sw':
         newWidth = Math.max(50, (element.x + element.width) - (e.clientX - canvasRect.left - dragOffset.x));
         newHeight = Math.max(30, e.clientY - canvasRect.top - element.y - dragOffset.y);
         newElementX = Math.min(e.clientX - canvasRect.left - dragOffset.x, element.x + element.width - 50);
         break;
-      case 'ne': // Northeast - resize from right-top corner
+      case 'ne':
         newWidth = Math.max(50, e.clientX - canvasRect.left - element.x - dragOffset.x);
         newHeight = Math.max(30, (element.y + element.height) - (e.clientY - canvasRect.top - dragOffset.y));
         newElementY = Math.min(e.clientY - canvasRect.top - dragOffset.y, element.y + element.height - 30);
         break;
-      case 'nw': // Northwest - resize from left-top corner
+      case 'nw':
         newWidth = Math.max(50, (element.x + element.width) - (e.clientX - canvasRect.left - dragOffset.x));
         newHeight = Math.max(30, (element.y + element.height) - (e.clientY - canvasRect.top - dragOffset.y));
         newElementX = Math.min(e.clientX - canvasRect.left - dragOffset.x, element.x + element.width - 50);
         newElementY = Math.min(e.clientY - canvasRect.top - dragOffset.y, element.y + element.height - 30);
         break;
-      case 'e': // East - resize from right side
+      case 'e':
         newWidth = Math.max(50, e.clientX - canvasRect.left - element.x - dragOffset.x);
         break;
-      case 'w': // West - resize from left side
+      case 'w':
         newWidth = Math.max(50, (element.x + element.width) - (e.clientX - canvasRect.left - dragOffset.x));
         newElementX = Math.min(e.clientX - canvasRect.left - dragOffset.x, element.x + element.width - 50);
         break;
     }
     
-    // Calculate font size and height for text elements
     let newFontSize = element.style?.fontSize || 16;
     if (element.type === 'text') {
       const isCornerHandle = ['se', 'sw', 'ne', 'nw'].includes(resizeHandle);
       const isSideHandle = ['e', 'w'].includes(resizeHandle);
       
       if (isCornerHandle) {
-        // For corner handles: scale font size based on width ratio
         const currentWidth = element.width;
         const widthRatio = newWidth / currentWidth;
         const currentFontSize = element.style?.fontSize || 16;
-        // Gentle zoom - optimized sensitivity boost for smooth control
         newFontSize = currentFontSize * (widthRatio * 1.009);
       }
-      // For side handles (e, w): keep original font size
       
-      // Calculate height based on content, width, and font size
       if (element.content && element.content.trim()) {
         const tempDiv = document.createElement('div');
         tempDiv.style.position = 'absolute';
@@ -477,13 +457,10 @@ export default function Create() {
         const measuredHeight = tempDiv.scrollHeight;
         document.body.removeChild(tempDiv);
         
-        // For corner handles: use measured height (zoom behavior)
-        // For side handles: use measured height (text wrap behavior)
         if (isCornerHandle || isSideHandle) {
           newHeight = Math.max(measuredHeight, 30);
         }
       } else {
-        // If no content, use minimum height
         newHeight = Math.max(newHeight, 30);
       }
     }
@@ -493,7 +470,6 @@ export default function Create() {
       y: newElementY
     });
     
-    // Update element with new dimensions and font size (for corner handles)
     const newSlides = slides.map((slide, index) => {
       if (index === currentSlideIndex) {
         return {
@@ -519,10 +495,9 @@ export default function Create() {
     });
     setSlides(newSlides);
     
-    }); // End requestAnimationFrame
+    });
   }, [isResizing, selectedElement, resizeHandle, dragOffset, currentSlide.elements, slides, currentSlideIndex]);
 
-  // Handle delete element
   const handleDeleteElement = (elementId: string) => {
     const newSlides = slides.map((slide, index) => {
       if (index === currentSlideIndex) {
@@ -539,7 +514,6 @@ export default function Create() {
     saveToHistory(newSlides);
   };
 
-  // Handle canvas click
   const handleCanvasClick = (e: React.MouseEvent) => {
     if (e.target === canvasRef.current) {
       setSelectedElement(null);
@@ -547,9 +521,7 @@ export default function Create() {
     }
   };
 
-  // Handle drag start (always enabled, no tool required)
   const handleMouseDown = (e: React.MouseEvent, elementId: string) => {
-    // Don't start drag if editing text
     const element = currentSlide.elements.find(el => el.id === elementId);
     if (element?.isEditing) return;
     
@@ -568,11 +540,9 @@ export default function Create() {
     }
   };
 
-  // Handle drag with throttling for better performance
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isDragging || !selectedElement) return;
 
-    // Use requestAnimationFrame for smooth updates
     requestAnimationFrame(() => {
       const canvasRect = canvasRef.current?.getBoundingClientRect();
       if (!canvasRect) return;
@@ -580,7 +550,6 @@ export default function Create() {
       const newX = e.clientX - canvasRect.left - dragOffset.x;
       const newY = e.clientY - canvasRect.top - dragOffset.y;
 
-      // Constrain to canvas bounds
       const element = currentSlide.elements.find(el => el.id === selectedElement);
       const elementWidth = element?.width || 100;
       const elementHeight = element?.height || 50;
@@ -588,15 +557,12 @@ export default function Create() {
       const constrainedX = Math.max(0, Math.min(newX, 800 - elementWidth));
       const constrainedY = Math.max(0, Math.min(newY, 600 - elementHeight));
 
-      // Update preview position for smooth dragging
       setDragPreview({ x: constrainedX, y: constrainedY });
     });
   }, [isDragging, selectedElement, dragOffset, currentSlide.elements]);
 
-  // Handle drag end
   const handleMouseUp = useCallback(() => {
     if (isDragging && selectedElement && dragPreview) {
-      // Apply the final position to the actual element
       const newSlides = slides.map((slide, index) => {
         if (index === currentSlideIndex) {
           return {
@@ -618,7 +584,6 @@ export default function Create() {
     }
   }, [isDragging, selectedElement, dragPreview, slides, currentSlideIndex, saveToHistory]);
 
-  // Add mouse event listeners
   useEffect(() => {
     if (isDragging) {
       document.addEventListener('mousemove', handleMouseMove);
@@ -630,7 +595,6 @@ export default function Create() {
     }
   }, [isDragging, handleMouseMove, handleMouseUp]);
 
-  // Mouse event listeners for resize
   useEffect(() => {
     if (isResizing) {
       const handleMouseMove = (e: MouseEvent) => handleResize(e);
@@ -649,18 +613,15 @@ export default function Create() {
         document.removeEventListener('mouseup', handleMouseUp);
       };
     }
-  }, [isResizing, handleResize, slides]);
+  }, [isResizing, handleResize, slides, saveToHistory]);
 
-  // Add keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't handle shortcuts when save dialog is open
       if (showSaveDialog) {
         return;
       }
       
       if (e.key === 'Delete' && selectedElement) {
-        // Delete selected element
         setSlides(prevSlides => {
           const newSlides = prevSlides.map((slide, index) => {
             if (index === currentSlideIndex) {
@@ -679,11 +640,9 @@ export default function Create() {
         setContextMenu(null);
       } else if (e.ctrlKey || e.metaKey) {
         if (e.key === 'c' && !selectedElement) {
-          // Copy current slide
           e.preventDefault();
           setCopiedSlide(slides[currentSlideIndex]);
         } else if (e.key === 'v' && copiedSlide && !selectedElement) {
-          // Paste slide after current
           e.preventDefault();
           const newSlide = {
             ...copiedSlide,
@@ -699,7 +658,6 @@ export default function Create() {
           saveToHistory(newSlides);
           setCurrentSlideIndex(currentSlideIndex + 1);
         } else if (e.key === 'd' && !selectedElement) {
-          // Duplicate current slide
           e.preventDefault();
           const currentSlide = slides[currentSlideIndex];
           const duplicatedSlide = {
@@ -725,7 +683,6 @@ export default function Create() {
     };
   }, [selectedElement, currentSlideIndex, contextMenu, copiedSlide, showSaveDialog, slides, saveToHistory]);
 
-  // Close context menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (contextMenu && !(e.target as Element).closest('.context-menu')) {
@@ -741,7 +698,6 @@ export default function Create() {
     }
   }, [contextMenu]);
 
-  // Handle global mouse events for slide dragging
   useEffect(() => {
     const handleGlobalMouseUp = () => {
       if (isDraggingSlide) {
@@ -749,7 +705,6 @@ export default function Create() {
         setDragSlideIndex(null);
         document.body.style.cursor = '';
         
-        // Remove all ring classes
         document.querySelectorAll('[data-slide-index]').forEach(el => {
           el.classList.remove('ring-2', 'ring-blue-400');
         });
@@ -764,7 +719,6 @@ export default function Create() {
     }
   }, [isDraggingSlide]);
 
-  // Add new slide
   const addSlide = () => {
     const newSlide: Slide = {
       id: `slide-${Date.now()}`,
@@ -816,20 +770,17 @@ export default function Create() {
     e.preventDefault();
     e.stopPropagation();
     
-    // Position context menu above the slide thumbnail
     const rect = e.currentTarget.getBoundingClientRect();
-    const contextMenuHeight = 200; // Approximate height of context menu
+    const contextMenuHeight = 200;
     
-    let y = rect.top - contextMenuHeight - 10; // Position above by default
+    let y = rect.top - contextMenuHeight - 10;
     
-    // If not enough space above, position below
     if (y < 10) {
       y = rect.bottom + 10;
     }
     
-    // Ensure it doesn't go off screen horizontally
     let x = e.clientX;
-    const contextMenuWidth = 200; // Approximate width of context menu
+    const contextMenuWidth = 200;
     if (x + contextMenuWidth > window.innerWidth) {
       x = window.innerWidth - contextMenuWidth - 10;
     }
@@ -873,14 +824,12 @@ export default function Create() {
   };
 
   const handleSlideMouseDown = (e: React.MouseEvent, slideIndex: number) => {
-    // Only start drag if it's not a right click
     if (e.button !== 0) return;
     
     e.preventDefault();
     setIsDraggingSlide(true);
     setDragSlideIndex(slideIndex);
     
-    // Add drag cursor
     document.body.style.cursor = 'grabbing';
   };
 
@@ -890,20 +839,16 @@ export default function Create() {
     e.preventDefault();
     e.stopPropagation();
     
-    // Reset drag state
     setIsDraggingSlide(false);
     setDragSlideIndex(null);
     document.body.style.cursor = '';
     
-    // If dropped on different slide, reorder
     if (dragSlideIndex !== slideIndex) {
       const newSlides = [...slides];
       const draggedSlide = newSlides[dragSlideIndex];
       
-      // Remove from original position
       newSlides.splice(dragSlideIndex, 1);
       
-      // Insert at new position
       const insertIndex = slideIndex > dragSlideIndex ? slideIndex - 1 : slideIndex;
       newSlides.splice(insertIndex, 0, draggedSlide);
       
@@ -915,7 +860,6 @@ export default function Create() {
 
   const handleSlideMouseEnter = (slideIndex: number) => {
     if (isDraggingSlide && dragSlideIndex !== null && dragSlideIndex !== slideIndex) {
-      // Add visual feedback for drop target
       const slideElement = document.querySelector(`[data-slide-index="${slideIndex}"]`);
       if (slideElement) {
         slideElement.classList.add('ring-2', 'ring-blue-400');
@@ -931,7 +875,6 @@ export default function Create() {
   };
 
 
-  // Handle save slide
   const exportToPowerPoint = () => {
     if (slides.length === 0) {
       alert('Please add at least one slide to export');
@@ -939,28 +882,23 @@ export default function Create() {
     }
 
     try {
-      // Create new presentation
-      const pptx = new PptxGenJS();
+      const pptx: PptxGenJS = new PptxGenJS();
       
-      // Set presentation properties
-      pptx.layout = 'LAYOUT_16x9'; // 16:9 aspect ratio
+      pptx.layout = 'LAYOUT_16x9';
       pptx.author = 'MathSlide Creator';
       pptx.company = 'MathSlide Learning';
       pptx.subject = slideTopic || 'Mathematics Presentation';
       pptx.title = slideTitle || 'Untitled Presentation';
 
-      // Add slides
       slides.forEach((slide) => {
         const pptxSlide = pptx.addSlide();
         
-        // Set slide background
         pptxSlide.background = { color: slide.backgroundColor || '#ffffff' };
         
-        // Add elements to slide
         slide.elements.forEach((element) => {
-          const elementProps: any = {
-            x: (element.x / 800) * 10, // Convert to inches (assuming 800px = 10 inches)
-            y: (element.y / 600) * 5.625, // Convert to inches (assuming 600px = 5.625 inches)
+          const elementProps: PptxElementProps = {
+            x: (element.x / 800) * 10,
+            y: (element.y / 600) * 5.625,
             w: (element.width / 800) * 10,
             h: (element.height / 600) * 5.625,
           };
@@ -984,7 +922,7 @@ export default function Create() {
               if (element.content) {
                 pptxSlide.addImage({
                   ...elementProps,
-                  data: element.content, // Base64 data URL
+                  data: element.content,
                 });
               }
               break;
@@ -1021,7 +959,6 @@ export default function Create() {
         });
       });
 
-      // Generate and download
       const fileName = slideTitle 
         ? `${slideTitle.replace(/[^a-zA-Z0-9]/g, '_')}.pptx`
         : `MathPresentation_${new Date().toISOString().split('T')[0]}.pptx`;
@@ -1063,7 +1000,6 @@ export default function Create() {
     }
 
     try {
-      // Prepare presentation data with all slides
       const presentationData = {
         title: slideTitle,
         topic: slideTopic,
@@ -1076,7 +1012,6 @@ export default function Create() {
           content: JSON.stringify({
             elements: slide.elements.map(element => ({
               ...element,
-              // Ensure all elements have proper styling
               style: {
                 fontSize: element.style?.fontSize || 16,
                 fontFamily: element.style?.fontFamily || 'Arial',
@@ -1103,8 +1038,7 @@ export default function Create() {
         totalElements: slides.reduce((sum, slide) => sum + slide.elements.length, 0)
       });
 
-      // Generate a REAL PPTX from current slides using pptxgenjs (frontend)
-      const pptx = new PptxGenJS();
+      const pptx: PptxGenJS = new PptxGenJS();
       pptx.layout = 'LAYOUT_16x9';
       pptx.author = 'MathSlide Creator';
       pptx.company = 'MathSlide Learning';
@@ -1116,7 +1050,7 @@ export default function Create() {
         pptxSlide.background = { color: slide.backgroundColor || '#ffffff' };
 
         slide.elements.forEach((element) => {
-          const elementProps: any = {
+          const elementProps: PptxElementProps = {
             x: (element.x / 800) * 10,
             y: (element.y / 600) * 5.625,
             w: (element.width / 800) * 10,
@@ -1185,7 +1119,7 @@ export default function Create() {
         });
       });
 
-      const blob = (await (pptx as any).write({ outputType: 'blob' })) as Blob;
+      const blob = (await pptx.write({ outputType: 'blob' })) as Blob;
       const realFile = new File([blob as BlobPart], `${slideTitle.replace(/[^a-zA-Z0-9]/g, '_')}.pptx`, {
         type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
       });
@@ -1197,7 +1131,6 @@ export default function Create() {
 
       alert(`Presentation "${slideTitle}" saved successfully with ${slides.length} slides!`);
       setShowSaveDialog(false);
-      // Reset form but keep slides
       setSlideTitle('');
       setSlideTopic('');
       setSlidePrice(0);
@@ -1210,7 +1143,6 @@ export default function Create() {
 
   return (
     <div className="h-screen flex flex-col bg-gray-50 select-none">
-      {/* Top Toolbar */}
       <div className="flex items-center justify-between bg-white border-b border-gray-200 px-4 py-2 z-20">
         <div className="flex items-center gap-4">
           <h1 className="text-xl font-bold text-gray-900">Create Slide</h1>
@@ -1250,10 +1182,8 @@ export default function Create() {
         </div>
       </div>
 
-      {/* Text Formatting Toolbar */}
       {showTextToolbar && selectedElement && (
         <div className="bg-white border-b border-gray-200 px-4 py-2 flex items-center gap-4 z-19">
-          {/* Font Family */}
           <select
             value={getCurrentTextElement()?.style?.fontFamily || 'Arial'}
             onChange={(e) => updateTextStyle('fontFamily', e.target.value)}
@@ -1267,7 +1197,6 @@ export default function Create() {
             <option value="Courier New">Courier New</option>
           </select>
 
-          {/* Font Size */}
           <div className="flex items-center gap-1">
             <button
               onClick={() => updateTextStyle('fontSize', Math.max(4, (getCurrentTextElement()?.style?.fontSize || 16) - 2))}
@@ -1291,7 +1220,6 @@ export default function Create() {
             </button>
           </div>
 
-          {/* Font Color */}
           <div className="flex items-center gap-1">
             <div className="relative">
               <input
@@ -1299,7 +1227,6 @@ export default function Create() {
                 value={getCurrentTextElement()?.style?.color || '#000000'}
                 onChange={(e) => updateTextStyle('color', e.target.value)}
                 onMouseDown={() => {
-                  // Save current selection before opening color picker
                   const activeElement = document.activeElement as HTMLTextAreaElement;
                   if (activeElement && activeElement.tagName === 'TEXTAREA') {
                     setSavedSelection({
@@ -1310,7 +1237,6 @@ export default function Create() {
                   }
                 }}
                 onBlur={() => {
-                  // Restore focus to textarea when color picker closes
                   setTimeout(() => {
                     const textareas = document.querySelectorAll('textarea');
                     const activeTextarea = Array.from(textareas).find(ta => 
@@ -1331,7 +1257,6 @@ export default function Create() {
             <Palette size={16} className="text-gray-500" />
           </div>
 
-          {/* Text Styling */}
           <div className="flex items-center gap-1 border-l border-gray-300 pl-4">
             <button
               onClick={() => updateTextStyle('fontWeight', getCurrentTextElement()?.style?.fontWeight === 'bold' ? 'normal' : 'bold')}
@@ -1362,7 +1287,6 @@ export default function Create() {
             </button>
           </div>
 
-          {/* Text Alignment */}
           <div className="flex items-center gap-1 border-l border-gray-300 pl-4">
             <button
               onClick={() => updateTextStyle('textAlign', 'left')}
@@ -1402,7 +1326,6 @@ export default function Create() {
             </button>
           </div>
 
-          {/* List */}
           <div className="flex items-center gap-1 border-l border-gray-300 pl-4">
             <button
               onClick={() => {
@@ -1410,17 +1333,14 @@ export default function Create() {
                 let newContent = '';
                 
                 if (currentContent.includes('•')) {
-                  // Remove bullet points
                   newContent = currentContent.replace(/•\s*/g, '');
                 } else {
-                  // Add bullet points to each line
                   const lines = currentContent.split('\n');
                   newContent = lines.map(line => 
                     line.trim() === '' ? line : `• ${line}`
                   ).join('\n');
                 }
                 
-                // Update content directly
                 if (selectedElement) {
                   const newSlides = slides.map((slide, index) => {
                     if (index === currentSlideIndex) {
@@ -1450,13 +1370,9 @@ export default function Create() {
         </div>
       )}
 
-      {/* Main Content Area */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Left Sidebar - Canva Style with Hover Expand */}
         <div className="relative flex">
-          {/* Narrow Icon Bar */}
           <div className="w-16 bg-white border-r border-gray-200 flex flex-col relative z-10">
-            {/* Navbar Items */}
             <div className="flex flex-col">
               <button
                 onClick={() => {
@@ -1557,10 +1473,8 @@ export default function Create() {
             </div>
           </div>
 
-          {/* Expandable Content Panel */}
           {((activeTab === 'design' && isSidebarExpanded) || hoveredTab === 'design') && (
             <div className="w-80 bg-white border-r border-gray-200 shadow-lg transition-all duration-300 ease-in-out relative h-full flex flex-col">
-              {/* Collapse Button - Fixed position at right edge */}
               {isSidebarExpanded && activeTab === 'design' && (
                 <button
                   onClick={() => setIsSidebarExpanded(false)}
@@ -1570,7 +1484,6 @@ export default function Create() {
                 </button>
               )}
               <div className="p-6 flex-1 overflow-y-auto">
-              {/* Search Bar */}
               <div className="mb-6">
                 <div className="relative">
                   <input
@@ -1584,14 +1497,12 @@ export default function Create() {
                 </div>
               </div>
 
-              {/* Tabs */}
               <div className="flex gap-1 mb-6">
                 <button className="px-4 py-2 text-sm font-medium text-purple-600 border-b-2 border-purple-600">Templates</button>
                 <button className="px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">Layouts</button>
                 <button className="px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">Styles</button>
               </div>
               
-              {/* Templates Grid */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-semibold text-gray-900">Premium Templates for You</h3>
@@ -1620,10 +1531,8 @@ export default function Create() {
           </div>
         )}
 
-        {/* Math Elements Tab */}
         {((activeTab === 'elements' && isSidebarExpanded) || hoveredTab === 'elements') && (
           <div className="w-80 bg-white border-r border-gray-200 shadow-lg transition-all duration-300 ease-in-out relative h-full flex flex-col">
-            {/* Collapse Button */}
             {isSidebarExpanded && activeTab === 'elements' && (
               <button
                 onClick={() => setIsSidebarExpanded(false)}
@@ -1635,7 +1544,6 @@ export default function Create() {
             
             <div className="p-6 flex-1 overflow-y-auto">
               <div className="space-y-6">
-                {/* Basic Operations */}
                 <div>
                   <h3 className="text-sm font-semibold text-gray-900 mb-3">Basic Operations</h3>
                   <div className="grid grid-cols-4 gap-2">
@@ -1674,7 +1582,6 @@ export default function Create() {
                   </div>
                 </div>
 
-                {/* Fractions */}
                 <div>
                   <h3 className="text-sm font-semibold text-gray-900 mb-3">Fractions & Decimals</h3>
                   <div className="grid grid-cols-4 gap-2">
@@ -1713,7 +1620,6 @@ export default function Create() {
                   </div>
                 </div>
 
-                {/* Advanced Symbols */}
                 <div>
                   <h3 className="text-sm font-semibold text-gray-900 mb-3">Advanced Symbols</h3>
                   <div className="grid grid-cols-4 gap-2">
@@ -1752,7 +1658,6 @@ export default function Create() {
                   </div>
                 </div>
 
-                {/* Geometric Shapes */}
                 <div>
                   <h3 className="text-sm font-semibold text-gray-900 mb-3">Geometric Shapes</h3>
                   <div className="grid grid-cols-4 gap-2">
@@ -1787,10 +1692,8 @@ export default function Create() {
           </div>
         )}
 
-          {/* Text Tab */}
           {((activeTab === 'text' && isSidebarExpanded) || hoveredTab === 'text') && (
             <div className="w-80 bg-white border-r border-gray-200 shadow-lg transition-all duration-300 ease-in-out relative h-full flex flex-col">
-              {/* Collapse Button - Fixed position at right edge */}
               {isSidebarExpanded && activeTab === 'text' && (
                 <button
                   onClick={() => setIsSidebarExpanded(false)}
@@ -1839,10 +1742,8 @@ export default function Create() {
           </div>
         )}
 
-          {/* Uploads Tab */}
           {((activeTab === 'uploads' && isSidebarExpanded) || hoveredTab === 'uploads') && (
             <div className="w-80 bg-white border-r border-gray-200 shadow-lg transition-all duration-300 ease-in-out relative h-full flex flex-col">
-              {/* Collapse Button - Fixed position at right edge */}
               {isSidebarExpanded && activeTab === 'uploads' && (
                 <button
                   onClick={() => setIsSidebarExpanded(false)}
@@ -1929,7 +1830,6 @@ export default function Create() {
                     if (file.type.startsWith('image/')) {
                       console.log('Processing image file with FileReader');
                       
-                      // Check file size (max 10MB)
                       if (file.size > 10 * 1024 * 1024) {
                         alert('File size too large. Please select an image smaller than 10MB.');
                         return;
@@ -1996,7 +1896,6 @@ export default function Create() {
                         alert('Image loading was cancelled.');
                       };
                       
-                      // Try to read as data URL
                       try {
                         reader.readAsDataURL(file);
                       } catch (err) {
@@ -2007,7 +1906,6 @@ export default function Create() {
                         alert('Please select a valid image file (JPG, PNG, etc.)');
                       }
                     }
-                    // Reset file input
                     e.target.value = '';
                   }}
                 />
@@ -2016,7 +1914,6 @@ export default function Create() {
                   className="mt-2 inline-block px-4 py-2 bg-purple-600 text-white rounded-lg text-sm hover:bg-purple-700 cursor-pointer transition-all duration-200"
                   onClick={() => {
                     console.log('Choose files button clicked');
-                    // Trigger file input click
                     const fileInput = document.getElementById('file-upload') as HTMLInputElement;
                     if (fileInput) {
                       fileInput.click();
@@ -2032,9 +1929,7 @@ export default function Create() {
         )}
       </div>
 
-      {/* Main Content Area */}
       <div className="flex-1 flex flex-col">
-        {/* Top Toolbar */}
         <div className="flex items-center justify-between bg-white border-b border-gray-200 px-4 py-2">
           <div className="flex items-center gap-4">
             <h1 className="text-xl font-bold text-gray-900">Create Slide</h1>
@@ -2074,7 +1969,6 @@ export default function Create() {
           </div>
         </div>
 
-        {/* Canvas Area */}
         <div className="flex-1 flex items-center justify-center p-8">
           <div
             ref={canvasRef}
@@ -2087,7 +1981,6 @@ export default function Create() {
             }}
           >
               {currentSlide.elements.map((element) => {
-                // Use drag preview position if this element is being dragged
                 const isDraggingElement = isDragging && selectedElement === element.id;
                 const displayX = isDraggingElement && dragPreview ? dragPreview.x : element.x;
                 const displayY = isDraggingElement && dragPreview ? dragPreview.y : element.y;
@@ -2207,7 +2100,6 @@ export default function Create() {
                       )}
                     </div>
 
-                    {/* Element Controls */}
                     {selectedElement === element.id && !isDraggingElement && (
                       <div
                         className="absolute flex gap-1"
@@ -2226,10 +2118,8 @@ export default function Create() {
                       </div>
                     )}
 
-                    {/* Resize Handles */}
                     {selectedElement === element.id && !isDraggingElement && (
                       <>
-                        {/* Southeast */}
                         <div
                           className="absolute w-3 h-3 bg-blue-500 cursor-se-resize hover:bg-blue-600 transition-colors duration-200"
                           style={{
@@ -2238,7 +2128,6 @@ export default function Create() {
                           }}
                           onMouseDown={(e) => handleResizeStart(e, element.id, 'se')}
                         />
-                        {/* Southwest */}
                         <div
                           className="absolute w-3 h-3 bg-blue-500 cursor-sw-resize hover:bg-blue-600 transition-colors duration-200"
                           style={{
@@ -2247,7 +2136,6 @@ export default function Create() {
                           }}
                           onMouseDown={(e) => handleResizeStart(e, element.id, 'sw')}
                         />
-                        {/* Northeast */}
                         <div
                           className="absolute w-3 h-3 bg-blue-500 cursor-ne-resize hover:bg-blue-600 transition-colors duration-200"
                           style={{
@@ -2256,7 +2144,6 @@ export default function Create() {
                           }}
                           onMouseDown={(e) => handleResizeStart(e, element.id, 'ne')}
                         />
-                        {/* Northwest */}
                         <div
                           className="absolute w-3 h-3 bg-blue-500 cursor-nw-resize hover:bg-blue-600 transition-colors duration-200"
                           style={{
@@ -2265,7 +2152,6 @@ export default function Create() {
                           }}
                           onMouseDown={(e) => handleResizeStart(e, element.id, 'nw')}
                         />
-                        {/* East (Right) */}
                         <div
                           className="absolute w-3 h-3 bg-blue-500 cursor-e-resize hover:bg-blue-600 transition-colors duration-200"
                           style={{
@@ -2275,7 +2161,6 @@ export default function Create() {
                           }}
                           onMouseDown={(e) => handleResizeStart(e, element.id, 'e')}
                         />
-                        {/* West (Left) */}
                         <div
                           className="absolute w-3 h-3 bg-blue-500 cursor-w-resize hover:bg-blue-600 transition-colors duration-200"
                           style={{
@@ -2293,10 +2178,8 @@ export default function Create() {
           </div>
         </div>
 
-        {/* Bottom Slide Navigation - Enhanced Canva Style */}
         <div className="bg-white border-t border-gray-200 px-8 py-6">
           <div className="flex items-center justify-between">
-            {/* Slide thumbnails - Larger and more spacious */}
             <div className="flex items-center gap-3">
               {slides.map((slide, index) => (
                 <div
@@ -2320,9 +2203,7 @@ export default function Create() {
                     cursor: isDraggingSlide ? (dragSlideIndex === index ? 'grabbing' : 'grab') : 'pointer'
                   }}
                 >
-                  {/* Slide thumbnail content - Better preview */}
                   <div className="w-full h-full bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col items-center justify-center text-sm relative">
-                    {/* Mini elements preview */}
                     {slide.elements.length > 0 ? (
                       <div className="w-full h-full p-2">
                         {slide.elements.slice(0, 3).map((element, elIndex) => (
@@ -2347,7 +2228,6 @@ export default function Create() {
                       </div>
                     )}
                     
-                    {/* Slide number badge */}
                     <div className="absolute top-1 left-1 bg-black bg-opacity-70 text-white text-xs px-1.5 py-0.5 rounded">
                       {index + 1}
                     </div>
@@ -2355,7 +2235,6 @@ export default function Create() {
                 </div>
               ))}
               
-              {/* Add slide button - Enhanced */}
               <button
                 onClick={addSlide}
                 className="w-32 h-20 bg-gray-50 hover:bg-gray-100 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center transition-all duration-200 hover:border-purple-400 hover:bg-purple-50 group"
@@ -2367,7 +2246,6 @@ export default function Create() {
               </button>
             </div>
 
-            {/* Zoom controls */}
             <div className="flex items-center gap-3 ml-auto">
               <button className="w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors duration-200">
                 <span className="text-xs text-gray-600">-</span>
@@ -2383,7 +2261,6 @@ export default function Create() {
               </button>
             </div>
 
-            {/* Slide info */}
             <div className="flex items-center gap-2">
               <button className="w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors duration-200">
                 <Grid3X3 size={14} className="text-gray-600" />
@@ -2397,7 +2274,6 @@ export default function Create() {
         </div>
       </div>
 
-      {/* Context Menu */}
       {contextMenu && (
         <div 
           className="context-menu fixed z-50 bg-white rounded-lg shadow-lg border border-gray-200 py-2 min-w-48"
@@ -2407,7 +2283,6 @@ export default function Create() {
             transform: contextMenu.y > window.innerHeight / 2 ? 'translateY(-100%)' : 'none'
           }}
         >
-          {/* Arrow pointer */}
           <div 
             className="absolute w-2 h-2 bg-white border-r border-b border-gray-200 transform rotate-45"
             style={{
@@ -2482,7 +2357,6 @@ export default function Create() {
         </div>
       )}
 
-      {/* Save Dialog */}
       {showSaveDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">

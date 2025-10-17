@@ -50,30 +50,26 @@ export default function Payment() {
     const slideIds = selectedItems.map((item) => item.id);
 
     try {
-      // 1. Create a pending receipt
       const receiptResponse = await purchaseMutation.mutateAsync({
         slideIds,
         paymentMethodId: selectedMethodId,
       });
 
-      // 2. Simulate payment processing
       setIsProcessing(true);
-      await new Promise(resolve => setTimeout(resolve, 2500)); // 2.5-second delay for sandbox simulation
+      await new Promise(resolve => setTimeout(resolve, 2500));
 
-      // 3. Update the receipt status to "Paid"
       await updateStatusMutation.mutateAsync({
         receiptId: receiptResponse.data.id,
         status: 'Paid',
       });
 
-      // 4. Show success and clear cart
       setIsProcessing(false);
       setIsSuccess(true);
       clearCart();
 
     } catch (error) {
       console.error("Payment process failed:", error);
-      setIsProcessing(false); // Make sure to stop processing on error
+      setIsProcessing(false);
     }
   };
 
