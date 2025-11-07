@@ -10,6 +10,7 @@ export default function AiChat() {
 
   const chatMutation = useAiChatMutation();
 
+  // Lưu tin nhắn mỗi khi thay đổi
   useEffect(() => {
     localStorage.setItem("aiChatMessages", JSON.stringify(messages));
   }, [messages]);
@@ -33,6 +34,7 @@ export default function AiChat() {
 
   return (
     <div className="flex flex-col h-full font-sans">
+      {/* Vùng hiển thị tin nhắn */}
       <div className="flex-1 overflow-y-auto p-3 bg-gray-50">
         {messages.map((msg, i) => (
           <div
@@ -54,6 +56,7 @@ export default function AiChat() {
         )}
       </div>
 
+      {/* Ô nhập và nút gửi */}
       <div className="flex border-t p-2">
         <input
           className="flex-1 border rounded-lg px-2 py-1 focus:outline-none"

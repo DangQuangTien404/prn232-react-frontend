@@ -9,11 +9,14 @@ interface PaginationProps {
 export default function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) {
   const pageNumbers: (number | "...")[] = [];
 
+  // Always show first page
   pageNumbers.push(1);
 
+  // Calculate the range of pages to show around current page
   let rangeStart = Math.max(2, currentPage - 2);
   let rangeEnd = Math.min(totalPages - 1, currentPage + 2);
 
+  // Adjust range to always show 5 numbers when possible
   if (rangeEnd - rangeStart < 4) {
     if (rangeStart === 2) {
       rangeEnd = Math.min(totalPages - 1, rangeStart + 4);
@@ -22,18 +25,22 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
     }
   }
 
+  // Add ellipsis after first page if needed
   if (rangeStart > 2) {
     pageNumbers.push("...");
   }
 
+  // Add page numbers in the middle
   for (let i = rangeStart; i <= rangeEnd; i++) {
     pageNumbers.push(i);
   }
 
+  // Add ellipsis before last page if needed
   if (rangeEnd < totalPages - 1) {
     pageNumbers.push("...");
   }
 
+  // Always show last page if more than 1 page
   if (totalPages > 1) {
     pageNumbers.push(totalPages);
   }

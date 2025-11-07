@@ -41,9 +41,11 @@ export default function Register() {
         onSubmit={handleSubmit}
         className="grid w-100 max-w-md grid-rows-[auto_1fr_auto] items-center rounded-3xl border-2 border-yellow-400 bg-gray-50 px-6 py-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,0.25)]"
       >
+        {/* Header */}
         <div className="flex flex-col items-center justify-center self-start">
           <h3 className="mb-8 text-4xl font-semibold">Create Account</h3>
 
+          {/* Input Fields */}
           <div className="flex w-full flex-col items-center justify-center gap-6 px-2">
             <div className="flex w-full items-center justify-center gap-2">
               <User />
@@ -93,6 +95,7 @@ export default function Register() {
           </div>
         </div>
 
+        {/* Error/Success Message */}
         <p className="mt-4 self-end overflow-auto text-sm font-semibold text-red-500 max-h-14">
           {handleRegister.isError && handleRegister.error.message}
           {handleRegister.isSuccess && (
@@ -100,6 +103,7 @@ export default function Register() {
           )}
         </p>
 
+        {/* Submit Button */}
         <button
           disabled={handleRegister.isPending}
           type="submit"

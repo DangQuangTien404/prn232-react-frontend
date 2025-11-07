@@ -3,7 +3,7 @@ import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
-import { globalIgnores, defineConfig } from 'eslint/config'
+import { globalIgnores } from 'eslint/config'
 import eslintConfigPrettier from "eslint-config-prettier/flat";
 import pluginQuery from '@tanstack/eslint-plugin-query'
 

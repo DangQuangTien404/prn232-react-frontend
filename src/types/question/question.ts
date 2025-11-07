@@ -1,4 +1,4 @@
-import { createApiSuccessResponseSchema } from "src/types/genericApiResponse";
+import { createApiErrorResponseSchema, createApiSuccessResponseSchema } from "src/types/genericApiResponse";
 import { PagnitionSchema } from "src/types/pagnition";
 import { AnswerSchema } from "src/types/question/answer";
 import { TagSchema } from "src/types/tag/tag";
@@ -40,10 +40,14 @@ const PagnitedQuestionWithDetailSchema = v.object({
 export const PagnitedQuestionWithDetailSuccessResponseSchema = createApiSuccessResponseSchema(
   PagnitedQuestionWithDetailSchema,
 );
+const PagnitedQuestionWithDetailErrorResponseSchema = createApiErrorResponseSchema(PagnitedQuestionWithDetailSchema);
 
 export type QuestionRequest = v.InferOutput<typeof QuestionRequestSchema>;
 export type PagnitedQuestionWithDetailSuccessResponse = v.InferOutput<
   typeof PagnitedQuestionWithDetailSuccessResponseSchema
+>;
+export type PagnitedQuestionWithDetailErrorResponse = v.InferOutput<
+  typeof PagnitedQuestionWithDetailErrorResponseSchema
 >;
 
 export const UpdateQuestionSchema = v.object({

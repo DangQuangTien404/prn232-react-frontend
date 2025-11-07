@@ -35,6 +35,7 @@ export default function PurchaseHistory() {
 
   return (
     <div className="max-w-6xl mx-auto mt-10 p-6">
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 border-b border-gray-200 pb-3">
         <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
           <i className="bi bi-clock-history text-blue-600 text-2xl"></i>
@@ -45,6 +46,7 @@ export default function PurchaseHistory() {
         </span>
       </div>
 
+      {/* Table */}
       <div className="overflow-x-auto bg-white shadow-md rounded-2xl border border-gray-100">
         <table className="min-w-full text-sm text-left text-gray-600">
           <thead className="bg-gray-50 text-gray-500 uppercase text-xs tracking-wide">

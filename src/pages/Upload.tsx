@@ -112,6 +112,7 @@ export default function Upload() {
             </div>
           </div>
 
+          {/* File Upload Area */}
           <div className="px-8 mt-8">
             <label className="text-sm font-medium text-gray-700">Presentation File</label>
             <div
@@ -154,6 +155,7 @@ export default function Upload() {
             </div>
           )}
 
+          {/* Published Checkbox */}
           <div className="flex items-center gap-2 mt-6 px-8">
               <input
                 id="isPublished"
@@ -165,7 +167,9 @@ export default function Upload() {
               <label htmlFor="isPublished" className="text-sm font-medium text-gray-700">Make this slide public</label>
           </div>
           
+          {/* Form Footer */}
           <div className="mt-8 flex items-center justify-between rounded-b-xl bg-gray-50 px-8 py-4">
+             {/* Feedback Messages */}
             <div className="text-sm font-semibold">
               {createSlideMutation.isError && (
                 <div className="flex items-center gap-2 text-red-600">

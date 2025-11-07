@@ -23,12 +23,13 @@ export const useCart = create<CartStore>()(
     (set, get) => ({
       items: [],
       addToCart: (item) => set((state) => {
+        // Check if item already exists
         const existingItem = state.items.find(existing => existing.id === item.id);
         if (existingItem) {
-          return state;
+          return state; // Don't add duplicate
         }
-        return {
-          items: [...state.items, { ...item, selected: true }]
+        return { 
+          items: [...state.items, { ...item, selected: true }] 
         };
       }),
       removeFromCart: (itemId) =>
@@ -54,7 +55,7 @@ export const useCart = create<CartStore>()(
         const state = get();
         return state.items
           .filter((item) => item.selected)
-          .map(({ ...item }) => item);
+          .map(({ selected, ...item }) => item);
       },
       getTotalPrice: () => {
         const state = get();

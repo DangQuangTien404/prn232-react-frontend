@@ -7,6 +7,7 @@ export default function Home() {
 
   return (
     <div className="bg-amber-50 text-gray-800">
+      {/* Hero Section */}
       <div className="flex min-h-[calc(100svh-4rem)] items-center justify-center bg-[url(/imgs/bg/login.png)] bg-cover bg-center">
         <div className="mx-auto max-w-4xl text-center">
           <h1 className="text-5xl font-bold tracking-tight text-gray-900 sm:text-6xl">
@@ -35,6 +36,7 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Why Choose Us Section */}
       <section id="features" className="py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl lg:text-center">
@@ -98,6 +100,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* How It Works Section */}
       <section className="bg-amber-100/50 py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <h2 className="text-center text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">How It Works</h2>
@@ -127,6 +130,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Testimonial Section */}
       <section className="py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-xl text-center">
@@ -202,6 +206,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Final CTA Section */}
       <div className="bg-amber-100/50">
         <div className="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:flex lg:items-center lg:justify-between lg:px-8">
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
