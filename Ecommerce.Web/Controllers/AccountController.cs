@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using BCrypt.Net;
 
 namespace Web.Controllers
 {
@@ -38,7 +39,7 @@ namespace Web.Controllers
                 var user = new User
                 {
                     Username = model.Username,
-                    Password = model.Password,
+                    Password = BCrypt.Net.BCrypt.HashPassword(model.Password),
                     FullName = model.FullName,
                     Role = UserRole.Customer
                 };
@@ -62,9 +63,9 @@ namespace Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = _unitOfWork.UserRepository.Find(u => u.Username == model.Username && u.Password == model.Password).FirstOrDefault();
+                var user = _unitOfWork.UserRepository.Find(u => u.Username == model.Username).FirstOrDefault();
 
-                if (user != null)
+                if (user != null && BCrypt.Net.BCrypt.Verify(model.Password, user.Password))
                 {
                     var claims = new List<Claim>
             {
