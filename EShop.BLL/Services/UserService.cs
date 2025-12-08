@@ -58,5 +58,15 @@ namespace EShop.BLL.Services
 
             return user;
         }
+
+        public async Task<User> GetUserByIdAsync(int id)
+        {
+            return await _userRepository.GetByIdAsync(id);
+        }
+
+        public async Task UpdateUserAsync(User user)
+        {
+            await _userRepository.UpdateAsync(user);
+        }
     }
 }

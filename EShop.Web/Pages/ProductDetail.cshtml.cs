@@ -44,6 +44,15 @@ namespace EShop.Web.Pages
             var userIdStr = User.FindFirst("UserId")?.Value;
             if (int.TryParse(userIdStr, out int customerId))
             {
+                // Validation: Seller cannot review their own product
+                var product = await _productService.GetProductByIdAsync(id);
+                if (product != null && product.SellerId == customerId)
+                {
+                    // Seller đang tự review sản phẩm của mình
+                    // Có thể thêm TempData Error Message ở đây
+                    return RedirectToPage(new { id = id });
+                }
+
                 await _reviewService.AddReviewAsync(id, customerId, RatingInput, CommentInput);
             }
 
