@@ -126,12 +126,32 @@
                                 <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none text-dark">@item.Name</a>
                             </h6>
                             <div class="mb-2 text-warning small">
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-half"></i>
-                                <span class="text-muted ms-1">(4.5)</span>
+                                @{
+                                    double avgRating = 0;
+                                    int count = 0;
+                                    if (item.Reviews != null && item.Reviews.Any())
+                                    {
+                                        avgRating = item.Reviews.Average(r => r.Rating);
+                                        count = item.Reviews.Count;
+                                    }
+                                    int fullStars = (int)avgRating;
+                                    bool hasHalfStar = (avgRating - fullStars) >= 0.5;
+                                    int emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+                                }
+
+                                @for (int i = 0; i < fullStars; i++)
+                                {
+                                    <i class="bi bi-star-fill"></i>
+                                }
+                                @if (hasHalfStar)
+                                {
+                                    <i class="bi bi-star-half"></i>
+                                }
+                                @for (int i = 0; i < emptyStars; i++)
+                                {
+                                    <i class="bi bi-star"></i>
+                                }
+                                <span class="text-muted ms-1">(@avgRating.ToString("0.0"))</span>
                             </div>
 
                             <div class="d-flex justify-content-between align-items-center mt-auto">

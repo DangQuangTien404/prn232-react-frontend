@@ -102,7 +102,25 @@ namespace Ecommerce.Web.Controllers
             {
                 if (quantity > 0)
                 {
-                    item.Quantity = quantity;
+                    var product = _unitOfWork.ProductRepository.GetById(productId);
+                    if (product != null)
+                    {
+                        if (quantity > product.StockQuantity)
+                        {
+                            item.Quantity = product.StockQuantity;
+                            TempData["ErrorMessage"] = $"Kho chỉ còn {product.StockQuantity} sản phẩm. Đã cập nhật số lượng về mức tối đa.";
+                        }
+                        else
+                        {
+                            item.Quantity = quantity;
+                        }
+                    }
+                    else
+                    {
+                         // Product might be deleted
+                         cart.Remove(item);
+                         TempData["ErrorMessage"] = "Sản phẩm không còn tồn tại.";
+                    }
                 }
                 else
                 {
