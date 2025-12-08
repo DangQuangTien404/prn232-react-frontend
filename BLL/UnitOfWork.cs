@@ -1,13 +1,14 @@
 ﻿using BLL.Repositories;
 using DAL;
 using DAL.Entities;
-
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace BLL
 {
     public class UnitOfWork : IUnitOfWork
     {
         private readonly AppDbContext _context;
+        private IDbContextTransaction _transaction;
 
         private IRepository<User> _userRepository;
         private IRepository<Product> _productRepository;
@@ -31,8 +32,40 @@ namespace BLL
             _context.SaveChanges();
         }
 
+        public void BeginTransaction()
+        {
+            _transaction = _context.Database.BeginTransaction();
+        }
+
+        public void CommitTransaction()
+        {
+            try
+            {
+                _transaction?.Commit();
+            }
+            finally
+            {
+                _transaction?.Dispose();
+                _transaction = null;
+            }
+        }
+
+        public void RollbackTransaction()
+        {
+            try
+            {
+                _transaction?.Rollback();
+            }
+            finally
+            {
+                _transaction?.Dispose();
+                _transaction = null;
+            }
+        }
+
         public void Dispose()
         {
+            _transaction?.Dispose();
             _context.Dispose();
         }
     }

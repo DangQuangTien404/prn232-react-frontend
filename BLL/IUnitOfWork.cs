@@ -12,5 +12,8 @@ namespace BLL
         IRepository<Review> ReviewRepository { get; }
 
         void Save(); 
+        void BeginTransaction();
+        void CommitTransaction();
+        void RollbackTransaction();
     }
 }

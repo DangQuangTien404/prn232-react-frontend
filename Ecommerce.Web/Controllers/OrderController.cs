@@ -66,45 +66,57 @@ namespace Ecommerce.Web.Controllers
 
             }
 
-            var order = new Order
+            try
             {
-                CustomerId = userId,
-                OrderDate = DateTime.Now,
-                Status = initialStatus,
-                PaymentMethod = paymentInfo,
-                TotalAmount = cart.Sum(p => p.Total)
-            };
+                _unitOfWork.BeginTransaction();
 
-            _unitOfWork.OrderRepository.Add(order);
-            _unitOfWork.Save();
-
-            foreach (var item in cart)
-            {
-                var orderDetail = new OrderDetail
+                var order = new Order
                 {
-                    OrderId = order.Id,
-                    ProductId = item.ProductId,
-                    Quantity = item.Quantity,
-                    UnitPrice = item.Price
+                    CustomerId = userId,
+                    OrderDate = DateTime.Now,
+                    Status = initialStatus,
+                    PaymentMethod = paymentInfo,
+                    TotalAmount = cart.Sum(p => p.Total)
                 };
-                _unitOfWork.OrderDetailRepository.Add(orderDetail);
 
-                var product = _unitOfWork.ProductRepository.GetById(item.ProductId);
-                if (product != null)
+                _unitOfWork.OrderRepository.Add(order);
+                _unitOfWork.Save();
+
+                foreach (var item in cart)
                 {
-                    product.StockQuantity -= item.Quantity;
-                    // Stock is already checked above, but safety check remains
-                    if (product.StockQuantity < 0) product.StockQuantity = 0;
-                    _unitOfWork.ProductRepository.Update(product);
+                    var orderDetail = new OrderDetail
+                    {
+                        OrderId = order.Id,
+                        ProductId = item.ProductId,
+                        Quantity = item.Quantity,
+                        UnitPrice = item.Price
+                    };
+                    _unitOfWork.OrderDetailRepository.Add(orderDetail);
+
+                    var product = _unitOfWork.ProductRepository.GetById(item.ProductId);
+                    if (product != null)
+                    {
+                        product.StockQuantity -= item.Quantity;
+                        // Stock is already checked above, but safety check remains
+                        if (product.StockQuantity < 0) product.StockQuantity = 0;
+                        _unitOfWork.ProductRepository.Update(product);
+                    }
                 }
+
+                _unitOfWork.Save();
+                _unitOfWork.CommitTransaction();
+
+                HttpContext.Session.Remove(CART_KEY);
+                TempData["SuccessMessage"] = $"Đặt hàng thành công! Phương thức: {paymentInfo}";
+
+                return RedirectToAction("OrderConfirmed");
             }
-
-            _unitOfWork.Save();
-
-            HttpContext.Session.Remove(CART_KEY);
-            TempData["SuccessMessage"] = $"Đặt hàng thành công! Phương thức: {paymentInfo}";
-
-            return RedirectToAction("OrderConfirmed");
+            catch (Exception)
+            {
+                _unitOfWork.RollbackTransaction();
+                TempData["ErrorMessage"] = "Đã có lỗi xảy ra trong quá trình xử lý đơn hàng. Vui lòng thử lại.";
+                return RedirectToAction("Index", "Cart");
+            }
         }
         public IActionResult OrderConfirmed()
         {
