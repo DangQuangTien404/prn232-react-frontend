@@ -62,7 +62,8 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     try
     {
-        Ecommerce.Web.Data.DbInitializer.Seed(app);
+        var context = services.GetRequiredService<AppDbContext>();
+        Ecommerce.Web.Data.DbInitializer.Initialize(context);
     }
     catch (Exception ex)
     {

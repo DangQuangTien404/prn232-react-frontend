@@ -1,30 +1,50 @@
-﻿using DAL;
+﻿using BCrypt.Net;
+using DAL;
 using DAL.Entities;
+using System;
+using System.Linq;
 
 namespace Ecommerce.Web.Data
 {
-    public class DbInitializer
+    public static class DbInitializer
     {
-        public static void Seed(IApplicationBuilder applicationBuilder)
+        public static void Initialize(AppDbContext context)
         {
-            using (var serviceScope = applicationBuilder.ApplicationServices.CreateScope())
+            context.Database.EnsureCreated();
+
+            if (context.Users.Any())
             {
-                var context = serviceScope.ServiceProvider.GetService<AppDbContext>();
-
-                if (!context.Users.Any(u => u.Role == UserRole.Admin))
-                {
-                    var admin = new User
-                    {
-                        Username = "admin",
-                        Password = "123",
-                        FullName = "System Administrator",
-                        Role = UserRole.Admin
-                    };
-
-                    context.Users.Add(admin);
-                    context.SaveChanges();
-                }
+                return;
             }
+
+            var users = new User[]
+            {
+                new User{
+                    Username="admin",
+                    Password=BCrypt.Net.BCrypt.HashPassword("123456"),
+                    FullName="Administrator",
+                    Role=UserRole.Admin
+                },
+                new User{
+                    Username="seller",
+                    Password=BCrypt.Net.BCrypt.HashPassword("123456"),
+                    FullName="Seller Account",
+                    Role=UserRole.Seller
+                },
+                new User{
+                    Username="customer",
+                    Password=BCrypt.Net.BCrypt.HashPassword("123456"),
+                    FullName="Customer Account",
+                    Role=UserRole.Customer
+                }
+            };
+
+            foreach (var u in users)
+            {
+                context.Users.Add(u);
+            }
+            context.SaveChanges();
+
         }
     }
 }
