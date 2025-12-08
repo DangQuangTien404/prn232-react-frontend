@@ -36,11 +36,19 @@ namespace Ecommerce.Web.Controllers
             var cart = GetCart();
             var cartItem = cart.SingleOrDefault(p => p.ProductId == productId);
 
-            if (cartItem == null) 
-            {
-                var product = _unitOfWork.ProductRepository.GetById(productId);
-                if (product == null) return NotFound("Sản phẩm không tồn tại");
+            var product = _unitOfWork.ProductRepository.GetById(productId);
+            if (product == null || product.IsDeleted) return NotFound("Sản phẩm không tồn tại hoặc đã bị xóa");
 
+            // Check stock quantity
+            int currentQuantityInCart = cartItem != null ? cartItem.Quantity : 0;
+            if (currentQuantityInCart + quantity > product.StockQuantity)
+            {
+                TempData["ErrorMessage"] = $"Số lượng yêu cầu vượt quá tồn kho (Còn lại: {product.StockQuantity})";
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (cartItem == null)
+            {
                 var userIdClaim = User.FindFirst("UserId");
                 if (userIdClaim != null)
                 {

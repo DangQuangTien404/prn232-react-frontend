@@ -37,6 +37,22 @@ namespace Ecommerce.Web.Controllers
             var cart = HttpContext.Session.Get<List<CartItemVM>>(CART_KEY);
             if (cart == null || cart.Count == 0) return RedirectToAction("Index", "Cart");
 
+            // VALIDATION STOCK AND SOFT DELETE
+            foreach (var item in cart)
+            {
+                var productCheck = _unitOfWork.ProductRepository.GetById(item.ProductId);
+                if (productCheck == null || productCheck.IsDeleted)
+                {
+                    TempData["ErrorMessage"] = $"Sản phẩm {item.ProductName} không còn tồn tại.";
+                    return RedirectToAction("Index", "Cart");
+                }
+                if (item.Quantity > productCheck.StockQuantity)
+                {
+                    TempData["ErrorMessage"] = $"Sản phẩm {item.ProductName} không đủ hàng (chỉ còn {productCheck.StockQuantity}).";
+                    return RedirectToAction("Index", "Cart");
+                }
+            }
+
             var userId = int.Parse(User.FindFirst("UserId").Value);
 
             string paymentInfo = "COD";
@@ -77,6 +93,7 @@ namespace Ecommerce.Web.Controllers
                 if (product != null)
                 {
                     product.StockQuantity -= item.Quantity;
+                    // Stock is already checked above, but safety check remains
                     if (product.StockQuantity < 0) product.StockQuantity = 0;
                     _unitOfWork.ProductRepository.Update(product);
                 }
@@ -113,15 +130,16 @@ namespace Ecommerce.Web.Controllers
         [Authorize(Roles = "Seller")]
         public IActionResult SellerOrders()
         {
-
-            var orders = _unitOfWork.OrderRepository.GetAll().OrderByDescending(o => o.OrderDate);
+            var userId = int.Parse(User.FindFirst("UserId").Value);
+            var orders = _unitOfWork.OrderRepository
+                .Find(o => o.OrderDetails.Any(od => od.Product.SellerId == userId))
+                .OrderByDescending(o => o.OrderDate);
             return View(orders);
         }
 
         [Authorize(Roles = "Seller")]
         public IActionResult SellerOrderDetails(int id)
         {
-
             var order = _unitOfWork.OrderRepository.GetById(id);
 
             if (order == null)
@@ -129,14 +147,27 @@ namespace Ecommerce.Web.Controllers
                 return NotFound();
             }
 
+            var userId = int.Parse(User.FindFirst("UserId").Value);
+
+            // Fetch details for this order
             var details = _unitOfWork.OrderDetailRepository.Find(od => od.OrderId == id).ToList();
 
+            // Populate Product info
             foreach (var item in details)
             {
                 item.Product = _unitOfWork.ProductRepository.GetById(item.ProductId);
             }
 
-            order.OrderDetails = details;
+            // Check if this seller has ANY product in this order
+            if (!details.Any(d => d.Product.SellerId == userId))
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+
+            // Filter details to show ONLY products belonging to this seller
+            var sellerDetails = details.Where(d => d.Product.SellerId == userId).ToList();
+
+            order.OrderDetails = sellerDetails;
 
             return View(order);
         }

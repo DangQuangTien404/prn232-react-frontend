@@ -1,3 +1,4 @@
+using Ecommerce.Web.Validation;
 ﻿using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
@@ -22,6 +23,8 @@ namespace Ecommerce.Web.ViewModels
         public string Description { get; set; }
 
         [Required(ErrorMessage = "Vui lòng chọn ảnh sản phẩm")]
+        [AllowedExtensions(new string[] { ".jpg", ".png" })]
+        [MaxFileSize(5 * 1024 * 1024)]
         public IFormFile ImageFile { get; set; }
     }
 }
