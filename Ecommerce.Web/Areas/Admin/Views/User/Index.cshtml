@@ -1,0 +1,94 @@
+﻿@model IEnumerable<DAL.Entities.User>
+@using DAL.Entities
+
+@{
+    ViewData["Title"] = "Quản lý và Phân quyền người dùng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold text-dark"><i class="bi bi-person-lines-fill"></i> Quản lý User & Phân Quyền</h3>
+        <span class="badge bg-primary fs-6">Tổng: @Model.Count() tài khoản</span>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="bi bi-check-circle"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="bi bi-exclamation-triangle"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0 align-middle">
+                    <thead class="bg-dark text-white">
+                        <tr>
+                            <th class="py-3 ps-3">ID</th>
+                            <th class="py-3">Họ và Tên</th>
+                            <th class="py-3">Username</th>
+                            <th class="py-3">Phân Quyền (Role)</th>
+                            <th class="py-3 text-end pe-3">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                            <tr>
+                                <td class="ps-3 fw-bold">#@user.Id</td>
+                                <td class="fw-bold text-primary">@user.FullName</td>
+                                <td>@user.Username</td>
+
+                                <td>
+                                    @if (user.Username != User.Identity.Name) // Không sửa chính mình
+                                    {
+                                        <form asp-action="UpdateRole" method="post" class="d-flex align-items-center gap-2">
+                                            <input type="hidden" name="userId" value="@user.Id" />
+
+                                            <select name="newRole" class="form-select form-select-sm" style="width: 130px;" onchange="this.form.submit()">
+                                                <!option value="@UserRole.Customer" @(user.Role == UserRole.Customer ? "selected" : "")>Customer</!option>
+                                                <!option value="@UserRole.Seller" @(user.Role == UserRole.Seller ? "selected" : "")>Seller</!option>
+                                                <!option value="@UserRole.Admin" @(user.Role == UserRole.Admin ? "selected" : "")>Admin</!option>
+                                            </select>
+
+                                            <span class="badge bg-secondary d-none d-md-inline">
+                                                @(user.Role == UserRole.Admin ? "Quản trị" : (user.Role == UserRole.Seller ? "Bán hàng" : "Khách"))
+                                            </span>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success"><i class="bi bi-shield-check"></i> Admin (Bạn)</span>
+                                    }
+                                </td>
+
+                                <td class="text-end pe-3">
+                                    @if (user.Username != User.Identity.Name)
+                                    {
+                                        <a asp-action="Delete" asp-route-id="@user.Id" class="btn btn-sm btn-outline-danger"
+                                           onclick="return confirm('CẢNH BÁO: Xóa tài khoản sẽ mất hết đơn hàng liên quan. Tiếp tục?');">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-sm btn-light" disabled><i class="bi bi-lock"></i></button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

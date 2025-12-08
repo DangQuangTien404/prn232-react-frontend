@@ -1,0 +1,210 @@
+﻿@model IEnumerable<DAL.Entities.Product>
+
+@{
+    ViewData["Title"] = "Trang chủ";
+}
+
+<div class="bg-primary text-white text-center py-5 mb-5 rounded-3 shadow-lg"
+     style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="container py-3">
+        <h1 class="display-4 fw-bold mb-3">🛍️ EShop System Hub</h1>
+        <p class="lead mb-4">Nền tảng mua sắm trực tuyến hiện đại, kết nối người bán và người mua.</p>
+
+        @if (User.Identity.IsAuthenticated)
+        {
+            <div class="bg-white text-dark d-inline-block px-4 py-2 rounded-pill shadow-sm">
+                <span>Xin chào, <strong>@User.Identity.Name</strong>! 👋</span>
+                <span class="badge bg-secondary ms-2">
+                    @(User.IsInRole("Admin") ? "Quản trị viên" : (User.IsInRole("Seller") ? "Người bán" : "Khách hàng"))
+                </span>
+            </div>
+            <div class="mt-3">
+                <a href="#product-list" class="btn btn-light btn-lg px-4 me-2 fw-bold text-primary">Mua sắm ngay</a>
+            </div>
+        }
+        else
+        {
+            <div class="d-flex justify-content-center gap-3">
+                <a asp-controller="Account" asp-action="Login" class="btn btn-light btn-lg px-4 fw-bold text-primary">Đăng nhập</a>
+                <a asp-controller="Account" asp-action="Register" class="btn btn-outline-light btn-lg px-4">Đăng ký</a>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="container">
+    @if (User.IsInRole("Seller") || User.IsInRole("Admin"))
+    {
+        <div class="row g-4 mb-5">
+            <div class="col-12">
+                <h4 class="text-muted border-start border-4 border-primary ps-3 mb-3">🛠️ Bảng điều khiển nhanh</h4>
+            </div>
+
+            @if (User.IsInRole("Seller") || User.IsInRole("Admin"))
+            {
+                <div class="col-md-3 col-sm-6">
+                    <a asp-controller="Product" asp-action="Index" class="card h-100 text-decoration-none shadow-hover border-0 bg-soft-primary">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-box-seam fs-1 text-primary mb-2"></i>
+                            <h6 class="fw-bold text-dark">Quản lý Sản phẩm</h6>
+                            <small class="text-muted">Kho hàng & Đăng bán</small>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <a asp-controller="Order" asp-action="SellerOrders" class="card h-100 text-decoration-none shadow-hover border-0 bg-soft-warning">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-truck fs-1 text-warning mb-2"></i>
+                            <h6 class="fw-bold text-dark">Quản lý Đơn hàng</h6>
+                            <small class="text-muted">Xử lý & Vận chuyển</small>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <a asp-controller="Product" asp-action="Create" class="card h-100 text-decoration-none shadow-hover border-0 bg-soft-success">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-plus-circle fs-1 text-success mb-2"></i>
+                            <h6 class="fw-bold text-dark">Đăng bán mới</h6>
+                            <small class="text-muted">Tạo sản phẩm ngay</small>
+                        </div>
+                    </a>
+                </div>
+            }
+
+            @if (User.IsInRole("Admin"))
+            {
+                <div class="col-md-3 col-sm-6">
+                    <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="card h-100 text-decoration-none shadow-hover border-0 bg-soft-danger">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-graph-up-arrow fs-1 text-danger mb-2"></i>
+                            <h6 class="fw-bold text-dark">Thống kê hệ thống</h6>
+                            <small class="text-muted">Báo cáo doanh thu</small>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    }
+
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2" id="product-list">
+        <h3 class="fw-bold text-dark m-0"><i class="bi bi-fire text-danger"></i> Sản phẩm nổi bật</h3>
+
+        <form class="d-flex" role="search">
+            <input class="form-control me-2 rounded-pill px-3" type="search" placeholder="Tìm kiếm..." aria-label="Search">
+            <button class="btn btn-outline-primary rounded-circle" type="submit"><i class="bi bi-search"></i></button>
+        </form>
+    </div>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mb-5">
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var item in Model)
+            {
+                <div class="col">
+                    <div class="card h-100 border-0 shadow-sm product-card transition-hover">
+                        <span class="badge bg-danger position-absolute top-0 start-0 m-3">Hot</span>
+
+                        <div class="position-relative overflow-hidden bg-light rounded-top" style="padding-top: 75%;">
+                            @if (!string.IsNullOrEmpty(item.ImageUrl))
+                            {
+                                <img src="~/images/@item.ImageUrl" class="position-absolute top-0 start-0 w-100 h-100" style="object-fit: cover;" alt="@item.Name">
+                            }
+                            else
+                            {
+                                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center text-muted">
+                                    <i class="bi bi-image fs-1"></i>
+                                </div>
+                            }
+
+                            <div class="product-overlay d-flex justify-content-center align-items-center gap-2">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-light rounded-circle shadow-sm" title="Xem chi tiết"><i class="bi bi-eye"></i></a>
+                            </div>
+                        </div>
+
+                        <div class="card-body d-flex flex-column p-3">
+                            <h6 class="card-title text-truncate fw-bold mb-1">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none text-dark">@item.Name</a>
+                            </h6>
+                            <div class="mb-2 text-warning small">
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-half"></i>
+                                <span class="text-muted ms-1">(4.5)</span>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mt-auto">
+                                <span class="text-danger fw-bold fs-5">@item.Price.ToString("#,##0") đ</span>
+                                <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                                    <input type="hidden" name="productId" value="@item.Id" />
+                                    <input type="hidden" name="quantity" value="1" />
+                                    <button type="submit" class="btn btn-sm btn-primary rounded-pill px-3">
+                                        <i class="bi bi-cart-plus"></i> Thêm
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center py-5">
+                <img src="https://cdni.iconscout.com/illustration/premium/thumb/empty-cart-2130356-1800917.png" alt="Empty" style="max-width: 200px; opacity: 0.7;">
+                <h5 class="mt-3 text-muted">Chưa có sản phẩm nào.</h5>
+                <p class="text-muted">Hãy quay lại sau hoặc đăng bán sản phẩm mới!</p>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    /* CSS nhúng nhanh để làm đẹp thêm */
+    .shadow-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
+        transition: all 0.3s ease;
+    }
+
+    .bg-soft-primary {
+        background-color: rgba(13, 110, 253, 0.1);
+    }
+
+    .bg-soft-warning {
+        background-color: rgba(255, 193, 7, 0.1);
+    }
+
+    .bg-soft-success {
+        background-color: rgba(25, 135, 84, 0.1);
+    }
+
+    .bg-soft-danger {
+        background-color: rgba(220, 53, 69, 0.1);
+    }
+
+    .product-card {
+        transition: all 0.3s ease;
+    }
+
+        .product-card:hover {
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+            transform: translateY(-2px);
+        }
+    /* Ẩn hiện nút xem nhanh khi hover ảnh */
+    .product-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.2);
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .position-relative:hover .product-overlay {
+        opacity: 1;
+    }
+</style>

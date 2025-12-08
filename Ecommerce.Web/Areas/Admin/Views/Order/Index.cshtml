@@ -1,0 +1,78 @@
+﻿@model IEnumerable<DAL.Entities.Order>
+@using DAL.Entities
+
+@{
+    ViewData["Title"] = "Quản lý toàn bộ đơn hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold text-dark"><i class="bi bi-cart-check-fill"></i> Đơn hàng toàn hệ thống</h3>
+        <span class="badge bg-primary fs-6">Tổng: @Model.Count() đơn</span>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0 align-middle">
+                    <thead class="bg-dark text-white">
+                        <tr>
+                            <th class="py-3 ps-3">Mã đơn (#)</th>
+                            <th class="py-3">Ngày đặt</th>
+                            <th class="py-3">Khách hàng</th>
+                            <th class="py-3">Tổng tiền</th>
+                            <th class="py-3">Trạng thái</th>
+                            <th class="py-3 text-end pe-3">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="ps-3 fw-bold">#@item.Id</td>
+                                <td>@item.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>
+                                    <div class="fw-bold">@item.Customer?.FullName</div>
+                                    <small class="text-muted">@item.Customer?.Username</small>
+                                </td>
+                                <td class="text-danger fw-bold">@item.TotalAmount.ToString("#,##0") đ</td>
+                                <td>
+                                    @if (item.Status == OrderStatus.Pending)
+                                    {
+                                        <span class="badge bg-warning text-dark">Chờ xử lý</span>
+                                    }
+                                    else if (item.Status == OrderStatus.Confirmed)
+                                    {
+
+                                        <span class="badge bg-primary">Đã xác nhận</span>
+                                    }
+                                    else if (item.Status == OrderStatus.Shipping)
+                                    {
+
+                                        <span class="badge bg-info text-dark">Đang giao</span>
+                                    }
+                                    else if (item.Status == OrderStatus.Completed)
+                                    {
+
+                                        <span class="badge bg-success">Hoàn tất</span>
+                                    }
+                                    else
+                                    {
+
+                                        <span class="badge bg-secondary">Đã hủy</span>
+                                    }
+                                </td>
+                                <td class="text-end pe-3">
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i> Xem
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
