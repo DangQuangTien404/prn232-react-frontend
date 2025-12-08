@@ -8,6 +8,7 @@ namespace EShop.DAL.Repositories
     {
         Task<int> CreateOrderAsync(Order order);
         Task<List<OrderDetail>> GetOrderDetailsBySellerAsync(int sellerId);
+        Task<Order> GetOrderWithDetailsAsync(int orderId);
         Task UpdateOrderStatusAsync(int orderId, OrderStatus status);
         Task<List<Order>> GetOrdersByCustomerAsync(int customerId);
         Task<(decimal Revenue, int OrderCount, int ProductCount)> GetSalesStatisticsAsync();

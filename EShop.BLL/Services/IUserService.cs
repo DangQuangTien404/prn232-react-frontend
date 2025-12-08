@@ -8,6 +8,8 @@ namespace EShop.BLL.Services
     {
         Task<bool> RegisterAsync(RegisterDto request);
         Task<User> LoginAsync(LoginDto request);
+        Task<User> GetUserByIdAsync(int id);
+        Task UpdateUserAsync(User user);
         Task<List<User>> GetAllUsersAsync();
         Task DeleteUserAsync(int id);
     }

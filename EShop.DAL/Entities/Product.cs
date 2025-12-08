@@ -23,6 +23,8 @@ namespace EShop.DAL.Entities
         public int SellerId { get; set; }
         public User Seller { get; set; }
 
+        public bool IsDeleted { get; set; }
+
         public ICollection<Review> Reviews { get; set; }
     }
 }

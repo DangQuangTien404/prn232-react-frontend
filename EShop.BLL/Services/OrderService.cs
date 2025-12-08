@@ -13,11 +13,13 @@ namespace EShop.BLL.Services
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IProductRepository _productRepository;
 
-        public OrderService(IOrderRepository orderRepository, IUserRepository userRepository) // Thêm tham số
+        public OrderService(IOrderRepository orderRepository, IUserRepository userRepository, IProductRepository productRepository) // Thêm tham số
         {
             _orderRepository = orderRepository;
             _userRepository = userRepository;
+            _productRepository = productRepository;
         }
         public async Task<DashboardStatsDto> GetAdminStatsAsync()
         {
@@ -43,10 +45,53 @@ namespace EShop.BLL.Services
         }
         public async Task UpdateStatusAsync(int orderId, OrderStatus status)
         {
+            // Nếu hủy đơn, trả hàng về kho
+            if (status == OrderStatus.Cancelled)
+            {
+                var order = await _orderRepository.GetOrderWithDetailsAsync(orderId);
+                if (order != null && order.Status != OrderStatus.Cancelled) // Chỉ hoàn kho nếu trạng thái trước đó chưa hủy
+                {
+                    foreach (var detail in order.OrderDetails)
+                    {
+                        var product = await _productRepository.GetByIdAsync(detail.ProductId);
+                        if (product != null)
+                        {
+                            product.StockQuantity += detail.Quantity;
+                            await _productRepository.UpdateAsync(product);
+                        }
+                    }
+                }
+            }
+
             await _orderRepository.UpdateOrderStatusAsync(orderId, status);
         }
+
         public async Task<int> CreateOrderAsync(int customerId, List<CartItem> cartItems, PaymentMethod paymentMethod)
         {
+            // Validate Stock
+            foreach (var item in cartItems)
+            {
+                var product = await _productRepository.GetByIdAsync(item.ProductId);
+                if (product == null || product.StockQuantity < item.Quantity)
+                {
+                    // Tạm thời throw exception, hoặc xử lý trả về -1 để Controller redirect
+                    // Nhưng yêu cầu "redirected to Cart with error message" được xử lý ở đây không tiện.
+                    // Controller sẽ bắt exception này? Hay mình trả về ID lỗi?
+                    throw new Exception($"Sản phẩm {product?.Name ?? "Không tìm thấy"} không đủ số lượng tồn kho.");
+                }
+            }
+
+            // Trừ kho
+            foreach (var item in cartItems)
+            {
+                var product = await _productRepository.GetByIdAsync(item.ProductId);
+                if (product != null)
+                {
+                    product.StockQuantity -= item.Quantity;
+                    await _productRepository.UpdateAsync(product);
+                }
+            }
+
             var order = new Order
             {
                 CustomerId = customerId,

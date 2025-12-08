@@ -37,6 +37,14 @@ namespace EShop.DAL.Repositories
                 .OrderByDescending(od => od.Order.OrderDate) 
                 .ToListAsync();
         }
+
+        public async Task<Order> GetOrderWithDetailsAsync(int orderId)
+        {
+            return await _context.Orders
+                .Include(o => o.OrderDetails)
+                .FirstOrDefaultAsync(o => o.Id == orderId);
+        }
+
         public async Task<List<Order>> GetOrdersByCustomerAsync(int customerId)
         {
             return await _context.Orders
