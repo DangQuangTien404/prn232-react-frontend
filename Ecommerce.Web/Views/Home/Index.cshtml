@@ -136,13 +136,31 @@
 
                             <div class="d-flex justify-content-between align-items-center mt-auto">
                                 <span class="text-danger fw-bold fs-5">@item.Price.ToString("#,##0") đ</span>
-                                <form asp-controller="Cart" asp-action="AddToCart" method="post">
-                                    <input type="hidden" name="productId" value="@item.Id" />
-                                    <input type="hidden" name="quantity" value="1" />
-                                    <button type="submit" class="btn btn-sm btn-primary rounded-pill px-3">
-                                        <i class="bi bi-cart-plus"></i> Thêm
+                                @{
+                                    var currentUserIdStr = User.FindFirst("UserId")?.Value;
+                                    int currentUserId = 0;
+                                    if (!string.IsNullOrEmpty(currentUserIdStr))
+                                    {
+                                        int.TryParse(currentUserIdStr, out currentUserId);
+                                    }
+                                }
+
+                                @if (User.Identity.IsAuthenticated && item.SellerId == currentUserId)
+                                {
+                                    <button type="button" class="btn btn-sm btn-secondary rounded-pill px-3" disabled>
+                                        <i class="bi bi-person-fill"></i> Của bạn
                                     </button>
-                                </form>
+                                }
+                                else
+                                {
+                                    <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                                        <input type="hidden" name="productId" value="@item.Id" />
+                                        <input type="hidden" name="quantity" value="1" />
+                                        <button type="submit" class="btn btn-sm btn-primary rounded-pill px-3">
+                                            <i class="bi bi-cart-plus"></i> Thêm
+                                        </button>
+                                    </form>
+                                }
                             </div>
                         </div>
                     </div>

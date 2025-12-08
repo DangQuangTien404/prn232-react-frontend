@@ -48,19 +48,35 @@
 
                     @if (Model.StockQuantity > 0)
                     {
+                        var currentUserIdStr = User.FindFirst("UserId")?.Value;
+                        int currentUserId = 0;
+                        if (!string.IsNullOrEmpty(currentUserIdStr))
+                        {
+                            int.TryParse(currentUserIdStr, out currentUserId);
+                        }
+
                         <div class="d-flex gap-2">
-                            <form asp-controller="Cart" asp-action="AddToCart" method="post" class="d-flex align-items-center gap-3">
-                                <input type="hidden" name="productId" value="@Model.Id" />
-
-                                <div class="input-group" style="width: 140px;">
-                                    <span class="input-group-text">SL</span>
-                                    <input type="number" name="quantity" value="1" min="1" max="@Model.StockQuantity" class="form-control text-center fw-bold" />
-                                </div>
-
-                                <button type="submit" class="btn btn-primary btn-lg px-4 shadow-sm">
-                                    <i class="bi bi-cart-plus-fill"></i> Chọn Mua
+                            @if (User.Identity.IsAuthenticated && Model.SellerId == currentUserId)
+                            {
+                                <button type="button" class="btn btn-secondary btn-lg px-4 shadow-sm" disabled>
+                                    <i class="bi bi-person-fill"></i> Sản phẩm của bạn
                                 </button>
-                            </form>
+                            }
+                            else
+                            {
+                                <form asp-controller="Cart" asp-action="AddToCart" method="post" class="d-flex align-items-center gap-3">
+                                    <input type="hidden" name="productId" value="@Model.Id" />
+
+                                    <div class="input-group" style="width: 140px;">
+                                        <span class="input-group-text">SL</span>
+                                        <input type="number" name="quantity" value="1" min="1" max="@Model.StockQuantity" class="form-control text-center fw-bold" />
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary btn-lg px-4 shadow-sm">
+                                        <i class="bi bi-cart-plus-fill"></i> Chọn Mua
+                                    </button>
+                                </form>
+                            }
                         </div>
                     }
 

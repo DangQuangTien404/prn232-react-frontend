@@ -44,7 +44,11 @@
                                     <td>
                                         @if (item.Status == DAL.Entities.OrderStatus.Pending)
                                         {
-                                            <span class="badge bg-warning text-dark">Chờ xử lý</span>
+                                            <span class="badge bg-warning text-dark">Chờ xác nhận</span>
+                                        }
+                                        else if (item.Status == DAL.Entities.OrderStatus.Confirmed)
+                                        {
+                                            <span class="badge bg-info text-dark">Đã xác nhận</span>
                                         }
                                         else if (item.Status == DAL.Entities.OrderStatus.Shipping)
                                         {
@@ -52,7 +56,11 @@
                                         }
                                         else if (item.Status == DAL.Entities.OrderStatus.Completed)
                                         {
-                                            <span class="badge bg-success">Hoàn tất</span>
+                                            <span class="badge bg-success">Đã giao</span>
+                                        }
+                                        else if (item.Status == DAL.Entities.OrderStatus.Cancelled)
+                                        {
+                                            <span class="badge bg-danger">Đã hủy</span>
                                         }
                                         else
                                         {
