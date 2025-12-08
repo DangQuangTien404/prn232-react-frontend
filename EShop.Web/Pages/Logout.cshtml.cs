@@ -9,6 +9,7 @@ namespace EShop.Web.Pages
     {
         public async Task<IActionResult> OnGetAsync()
         {
+            HttpContext.Session.Clear();
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToPage("/Login");
         }

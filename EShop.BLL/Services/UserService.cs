@@ -34,7 +34,7 @@ namespace EShop.BLL.Services
             var user = new User
             {
                 Username = request.Username,
-                PasswordHash = request.Password,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
                 FullName = request.FullName,
                 Role = request.Role
             };
@@ -51,7 +51,7 @@ namespace EShop.BLL.Services
                 return null;
             }
 
-            if (user.PasswordHash != request.Password)
+            if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
             {
                 return null;
             }

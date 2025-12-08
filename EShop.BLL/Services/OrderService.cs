@@ -68,52 +68,57 @@ namespace EShop.BLL.Services
 
         public async Task<int> CreateOrderAsync(int customerId, List<CartItem> cartItems, PaymentMethod paymentMethod)
         {
-            // Validate Stock
-            foreach (var item in cartItems)
+            using (var transaction = new System.Transactions.TransactionScope(System.Transactions.TransactionScopeAsyncFlowOption.Enabled))
             {
-                var product = await _productRepository.GetByIdAsync(item.ProductId);
-                if (product == null || product.StockQuantity < item.Quantity)
+                // Validate Stock
+                foreach (var item in cartItems)
                 {
-                    // Tạm thời throw exception, hoặc xử lý trả về -1 để Controller redirect
-                    // Nhưng yêu cầu "redirected to Cart with error message" được xử lý ở đây không tiện.
-                    // Controller sẽ bắt exception này? Hay mình trả về ID lỗi?
-                    throw new Exception($"Sản phẩm {product?.Name ?? "Không tìm thấy"} không đủ số lượng tồn kho.");
+                    var product = await _productRepository.GetByIdAsync(item.ProductId);
+                    if (product == null || product.StockQuantity < item.Quantity)
+                    {
+                        // Tạm thời throw exception, hoặc xử lý trả về -1 để Controller redirect
+                        // Nhưng yêu cầu "redirected to Cart with error message" được xử lý ở đây không tiện.
+                        // Controller sẽ bắt exception này? Hay mình trả về ID lỗi?
+                        throw new Exception($"Sản phẩm {product?.Name ?? "Không tìm thấy"} không đủ số lượng tồn kho.");
+                    }
                 }
-            }
 
-            // Trừ kho
-            foreach (var item in cartItems)
-            {
-                var product = await _productRepository.GetByIdAsync(item.ProductId);
-                if (product != null)
+                // Trừ kho
+                foreach (var item in cartItems)
                 {
-                    product.StockQuantity -= item.Quantity;
-                    await _productRepository.UpdateAsync(product);
+                    var product = await _productRepository.GetByIdAsync(item.ProductId);
+                    if (product != null)
+                    {
+                        product.StockQuantity -= item.Quantity;
+                        await _productRepository.UpdateAsync(product);
+                    }
                 }
-            }
 
-            var order = new Order
-            {
-                CustomerId = customerId,
-                OrderDate = DateTime.Now,
-                Status = OrderStatus.Pending,
-                PaymentMethod = paymentMethod,
-                IsPaid = false,
-                TotalAmount = cartItems.Sum(x => x.Total),
-                OrderDetails = new List<OrderDetail>()
-            };
-
-            foreach (var item in cartItems)
-            {
-                order.OrderDetails.Add(new OrderDetail
+                var order = new Order
                 {
-                    ProductId = item.ProductId,
-                    Quantity = item.Quantity,
-                    UnitPrice = item.Price
-                });
-            }
+                    CustomerId = customerId,
+                    OrderDate = DateTime.Now,
+                    Status = OrderStatus.Pending,
+                    PaymentMethod = paymentMethod,
+                    IsPaid = false,
+                    TotalAmount = cartItems.Sum(x => x.Total),
+                    OrderDetails = new List<OrderDetail>()
+                };
 
-            return await _orderRepository.CreateOrderAsync(order);
+                foreach (var item in cartItems)
+                {
+                    order.OrderDetails.Add(new OrderDetail
+                    {
+                        ProductId = item.ProductId,
+                        Quantity = item.Quantity,
+                        UnitPrice = item.Price
+                    });
+                }
+
+                var orderId = await _orderRepository.CreateOrderAsync(order);
+                transaction.Complete();
+                return orderId;
+            }
         }
     }
 }
