@@ -70,4 +70,34 @@ app.MapRazorPages();
 
 app.MapHub<ECommerceHub>("/ecommerceHub");
 
+// ==========================================
+// 5. Automatic Database Update (Fix for Missing IsDeleted Column)
+// ==========================================
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<EShopDbContext>();
+
+        // SQL to check if IsDeleted column exists, and if not, add it.
+        var sql = @"
+            IF NOT EXISTS (
+                SELECT * FROM sys.columns
+                WHERE Name = N'IsDeleted'
+                AND Object_ID = Object_ID(N'Products')
+            )
+            BEGIN
+                ALTER TABLE Products ADD IsDeleted BIT NOT NULL DEFAULT 0
+            END";
+
+        context.Database.ExecuteSqlRaw(sql);
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while updating the database schema.");
+    }
+}
+
 app.Run();
