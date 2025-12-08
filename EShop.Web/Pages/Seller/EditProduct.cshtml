@@ -1,0 +1,48 @@
+﻿@page "{id:int}"
+@model EShop.Web.Pages.Seller.EditProductModel
+@{
+    ViewData["Title"] = "Chỉnh sửa sản phẩm";
+}
+
+<div class="container mt-4">
+    <h2>Chỉnh sửa sản phẩm</h2>
+    <hr />
+    <div class="row">
+        <div class="col-md-6">
+            <form method="post" enctype="multipart/form-data">
+                <input type="hidden" asp-for="ProductInput.Id" />
+                <input type="hidden" asp-for="ProductInput.SellerId" />
+                <input type="hidden" asp-for="ProductInput.ImageUrl" /> <div class="mb-3">
+                    <label class="form-label">Tên sản phẩm</label>
+                    <input asp-for="ProductInput.Name" class="form-control" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Mô tả</label>
+                    <textarea asp-for="ProductInput.Description" class="form-control" rows="3"></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Giá bán (VNĐ)</label>
+                    <input asp-for="ProductInput.Price" type="number" class="form-control" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Số lượng trong kho</label>
+                    <input asp-for="ProductInput.StockQuantity" type="number" class="form-control" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Hình ảnh hiện tại</label> <br />
+                    <img src="@Model.ProductInput.ImageUrl" style="height: 100px;" class="mb-2 border rounded" />
+
+                    <label class="form-label d-block text-muted small">Chọn ảnh mới để thay thế (Bỏ qua nếu không muốn đổi)</label>
+                    <input type="file" asp-for="ImageFile" class="form-control" accept="image/*" />
+                </div>
+
+                <button type="submit" class="btn btn-warning">Lưu thay đổi</button>
+                <a asp-page="/Seller/ManageProducts" class="btn btn-secondary">Hủy</a>
+            </form>
+        </div>
+    </div>
+</div>

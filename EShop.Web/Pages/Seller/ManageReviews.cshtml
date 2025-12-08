@@ -1,0 +1,65 @@
+﻿@page
+@model EShop.Web.Pages.Seller.ManageReviewsModel
+@{
+    ViewData["Title"] = "Phản hồi đánh giá";
+}
+
+<div class="container mt-4">
+    <h2 class="text-success mb-4"><i class="bi bi-chat-quote"></i> Phản hồi Đánh giá</h2>
+
+    @if (Model.Reviews.Count == 0)
+    {
+        <div class="alert alert-info">Chưa có đánh giá nào về sản phẩm của bạn.</div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var review in Model.Reviews)
+            {
+                <div class="col-12 mb-3">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>@review.Customer.FullName</strong> đã đánh giá
+                                <span class="text-primary fw-bold">@review.Product.Name</span>
+                            </div>
+                            <small class="text-muted">@review.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                        </div>
+                        <div class="card-body">
+                            <div class="text-warning mb-2">
+                                @for (int i = 0; i < review.Rating; i++)
+                                {
+                                    <span>★</span>
+                                }
+                                <span class="text-muted text-small">(@review.Rating/5)</span>
+                            </div>
+
+                            <p class="card-text fst-italic">"@review.Comment"</p>
+
+                            <hr />
+
+                            @if (string.IsNullOrEmpty(review.SellerReply))
+                            {
+                                <form method="post" asp-page-handler="Reply">
+                                    <input type="hidden" name="reviewId" value="@review.Id" />
+                                    <div class="input-group">
+                                        <input type="text" name="replyContent" class="form-control" placeholder="Nhập câu trả lời của Shop..." required>
+                                        <button class="btn btn-primary" type="submit">Gửi trả lời</button>
+                                    </div>
+                                </form>
+                            }
+                            else
+                            {
+                                <div class="bg-light p-3 rounded border-start border-4 border-success">
+                                    <strong class="text-success"><i class="bi bi-shop"></i> Phản hồi của Shop:</strong>
+                                    <p class="mb-0 mt-1">@review.SellerReply</p>
+                                    <small class="text-muted">Đã trả lời lúc: @review.ReplyDate?.ToString("dd/MM/yyyy HH:mm")</small>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

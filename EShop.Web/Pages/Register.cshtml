@@ -1,0 +1,49 @@
+﻿@page
+@model EShop.Web.Pages.RegisterModel
+@using EShop.DAL.Enums
+@{
+    ViewData["Title"] = "Đăng ký";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <h3 class="text-center">Đăng Ký Tài Khoản</h3>
+
+            @if (!string.IsNullOrEmpty(Model.Message))
+            {
+                <div class="alert alert-danger">@Model.Message</div>
+            }
+
+            <form method="post">
+                <div class="mb-3">
+                    <label>Tài khoản</label>
+                    <input asp-for="RegisterInput.Username" class="form-control" />
+                    <span asp-validation-for="RegisterInput.Username" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label>Họ và tên</label>
+                    <input asp-for="RegisterInput.FullName" class="form-control" />
+                    <span asp-validation-for="RegisterInput.FullName" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label>Mật khẩu</label>
+                    <input asp-for="RegisterInput.Password" type="password" class="form-control" />
+                    <span asp-validation-for="RegisterInput.Password" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label>Vai trò (Demo)</label>
+                    <select asp-for="RegisterInput.Role" class="form-control"
+                            asp-items="Html.GetEnumSelectList<UserRole>()">
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-success w-100">Đăng Ký</button>
+            </form>
+            <div class="mt-3 text-center">
+                <a asp-page="/Login">Đã có tài khoản? Đăng nhập</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,48 @@
+﻿@page
+@model EShop.Web.Pages.Seller.CreateProductModel
+@{
+    ViewData["Title"] = "Đăng bán sản phẩm";
+}
+
+<div class="container mt-4">
+    <h2>Đăng bán sản phẩm mới</h2>
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger">
+            @Model.ErrorMessage
+        </div>
+    }
+    <hr />
+    <div class="row">
+        <div class="col-md-6">
+            <form method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label class="form-label">Tên sản phẩm</label>
+                    <input asp-for="ProductInput.Name" class="form-control" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Mô tả</label>
+                    <textarea asp-for="ProductInput.Description" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Hình ảnh sản phẩm</label>
+                    <input type="file" asp-for="ImageFile" class="form-control" accept="image/*" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Giá bán (VNĐ)</label>
+                    <input asp-for="ProductInput.Price" type="number" class="form-control" required />
+                </div>
+  
+                <div class="mb-3">
+                    <label class="form-label">Số lượng trong kho</label>
+                    <input asp-for="ProductInput.StockQuantity" type="number" class="form-control" required />
+                </div>
+
+                <button type="submit" class="btn btn-success">Đăng bán ngay</button>
+                <a asp-page="/Index" class="btn btn-secondary">Hủy</a>
+            </form>
+        </div>
+    </div>
+</div>

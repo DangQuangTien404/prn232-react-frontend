@@ -1,0 +1,54 @@
+﻿@page
+@model EShop.Web.Pages.CartModel
+@{
+    ViewData["Title"] = "Giỏ hàng";
+}
+
+<h2>Giỏ hàng của bạn</h2>
+
+@if (Model.CartItems.Count == 0)
+{
+    <div class="alert alert-info">Giỏ hàng trống. <a asp-page="/Index">Tiếp tục mua sắm</a></div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Sản phẩm</th>
+                <th>Giá</th>
+                <th>Số lượng</th>
+                <th>Thành tiền</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.CartItems)
+            {
+                <tr>
+                    <td>@item.ProductName</td>
+                    <td>@item.Price.ToString("N0")</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.Total.ToString("N0")</td>
+                    <td>
+                        <form method="post" asp-page-handler="Remove" asp-route-id="@item.ProductId">
+                            <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3" class="text-end fw-bold">Tổng cộng:</td>
+                <td class="fw-bold text-danger">@Model.GrandTotal.ToString("N0") VNĐ</td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="text-end">
+        <a asp-page="/Index" class="btn btn-secondary">Tiếp tục mua</a>
+        <a asp-page="/Checkout" class="btn btn-success">Tiến hành Thanh toán</a>
+    </div>
+}

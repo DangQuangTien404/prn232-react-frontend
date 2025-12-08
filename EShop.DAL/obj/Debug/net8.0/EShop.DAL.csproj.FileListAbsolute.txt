@@ -1,0 +1,14 @@
+D:\prn222\ECommercePlatform\EShop\EShop.DAL\bin\Debug\net8.0\EShop.DAL.deps.json
+D:\prn222\ECommercePlatform\EShop\EShop.DAL\bin\Debug\net8.0\EShop.DAL.runtimeconfig.json
+D:\prn222\ECommercePlatform\EShop\EShop.DAL\bin\Debug\net8.0\EShop.DAL.dll
+D:\prn222\ECommercePlatform\EShop\EShop.DAL\bin\Debug\net8.0\EShop.DAL.pdb
+D:\prn222\ECommercePlatform\EShop\EShop.DAL\obj\Debug\net8.0\EShop.DAL.csproj.AssemblyReference.cache
+D:\prn222\ECommercePlatform\EShop\EShop.DAL\obj\Debug\net8.0\EShop.DAL.GeneratedMSBuildEditorConfig.editorconfig
+D:\prn222\ECommercePlatform\EShop\EShop.DAL\obj\Debug\net8.0\EShop.DAL.AssemblyInfoInputs.cache
+D:\prn222\ECommercePlatform\EShop\EShop.DAL\obj\Debug\net8.0\EShop.DAL.AssemblyInfo.cs
+D:\prn222\ECommercePlatform\EShop\EShop.DAL\obj\Debug\net8.0\EShop.DAL.csproj.CoreCompileInputs.cache
+D:\prn222\ECommercePlatform\EShop\EShop.DAL\obj\Debug\net8.0\EShop.DAL.dll
+D:\prn222\ECommercePlatform\EShop\EShop.DAL\obj\Debug\net8.0\refint\EShop.DAL.dll
+D:\prn222\ECommercePlatform\EShop\EShop.DAL\obj\Debug\net8.0\EShop.DAL.pdb
+D:\prn222\ECommercePlatform\EShop\EShop.DAL\obj\Debug\net8.0\EShop.DAL.genruntimeconfig.cache
+D:\prn222\ECommercePlatform\EShop\EShop.DAL\obj\Debug\net8.0\ref\EShop.DAL.dll

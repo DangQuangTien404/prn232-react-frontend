@@ -1,0 +1,174 @@
+﻿@page
+@using EShop.DAL.Enums
+@model EShop.Web.Pages.Admin.DashboardModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-danger fw-bold"><i class="bi bi-speedometer2"></i> Dashboard Quản Trị</h2>
+        <span class="text-muted">Cập nhật lúc: @DateTime.Now.ToString("HH:mm dd/MM/yyyy")</span>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="card text-white bg-success shadow h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0">Tổng Doanh Thu</h6>
+                            <h3 class="fw-bold my-2">@Model.Stats.TotalRevenue.ToString("N0") ₫</h3>
+                            <small class="text-white-50"><i class="bi bi-arrow-up"></i> Đơn hàng hoàn tất</small>
+                        </div>
+                        <i class="bi bi-currency-dollar fs-1 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-white bg-primary shadow h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0">Đơn Hàng</h6>
+                            <h3 class="fw-bold my-2">@Model.Stats.TotalOrders</h3>
+                            <small class="text-white-50">Đã giao thành công</small>
+                        </div>
+                        <i class="bi bi-bag-check fs-1 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-white bg-warning shadow h-100">
+                <div class="card-body text-dark">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0">Sản Phẩm Đã Bán</h6>
+                            <h3 class="fw-bold my-2">@Model.Stats.TotalProductsSold</h3>
+                            <small class="text-dark-50">Items</small>
+                        </div>
+                        <i class="bi bi-box-seam fs-1 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-white bg-info shadow h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0">Khách Hàng</h6>
+                            <h3 class="fw-bold my-2">@Model.Stats.TotalCustomers</h3>
+                            <small class="text-white-50">Thành viên đăng ký</small>
+                        </div>
+                        <i class="bi bi-people fs-1 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="my-4" />
+
+    <ul class="nav nav-tabs" id="adminTab" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button">Quản lý Người dùng</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button">Kiểm duyệt Đánh giá</button>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-3" id="adminTabContent">
+        <div class="tab-pane fade show active" id="users">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="card-title">Danh sách tài khoản</h4>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Họ tên</th>
+                                <th>Vai trò</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in Model.Users)
+                            {
+                                <tr>
+                                    <td>@user.Id</td>
+                                    <td>@user.Username</td>
+                                    <td>@user.FullName</td>
+                                    <td>
+                                        @if (user.Role == UserRole.Admin)
+                                        {
+                                            <span class="badge bg-danger">Admin</span>
+                                        }
+                                        else if (user.Role == UserRole.Seller)
+                                        {
+
+                                            <span class="badge bg-success">Seller</span>
+                                        }
+                                        else
+                                        {
+
+                                            <span class="badge bg-secondary">Customer</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (user.Role != UserRole.Admin)
+                                        {
+                                            <form method="post" asp-page-handler="DeleteUser" asp-route-id="@user.Id" onsubmit="return confirm('Bạn có chắc muốn xóa user này?');">
+                                                <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i> Xóa</button>
+                                            </form>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="reviews">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="card-title mb-3">Kiểm duyệt đánh giá mới nhất</h4>
+                    @if (Model.Reviews.Count == 0)
+                    {
+                        <div class="alert alert-success">Hệ thống sạch sẽ! Chưa có đánh giá nào.</div>
+                    }
+                    else
+                    {
+                        <table class="table table-hover">
+                            <tbody>
+                                @foreach (var item in Model.Reviews)
+                                {
+                                    <tr>
+                                        <td>@item.Product?.Name</td>
+                                        <td>@item.Customer?.FullName</td>
+                                        <td>@item.Rating ⭐</td>
+                                        <td>@item.Comment</td>
+                                        <td>
+                                            <form method="post" asp-page-handler="DeleteReview" asp-route-id="@item.Id" onsubmit="return confirm('Xóa?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">Xóa</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
