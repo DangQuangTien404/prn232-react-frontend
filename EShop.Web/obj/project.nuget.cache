@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "/H0UScIbspA=",
+  "dgSpecHash": "8yVZixWFysc=",
   "success": true,
-  "projectFilePath": "D:\\prn222\\ECommercePlatform\\EShop\\EShop.Web\\EShop.Web.csproj",
+  "projectFilePath": "D:\\prn222\\code\\prn232-react-frontend\\EShop.Web\\EShop.Web.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\dangq\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
     "C:\\Users\\dangq\\.nuget\\packages\\azure.identity\\1.7.0\\azure.identity.1.7.0.nupkg.sha512",
+    "C:\\Users\\dangq\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\dangq\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\dangq\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\6.0.0\\microsoft.bcl.asyncinterfaces.6.0.0.nupkg.sha512",
     "C:\\Users\\dangq\\.nuget\\packages\\microsoft.codeanalysis.analyzers\\3.3.3\\microsoft.codeanalysis.analyzers.3.3.3.nupkg.sha512",

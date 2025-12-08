@@ -9,97 +9,101 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = EShop.Web
 build_property.RootNamespace = EShop.Web
-build_property.ProjectDir = D:\prn222\ECommercePlatform\EShop\EShop.Web\
+build_property.ProjectDir = D:\prn222\code\prn232-react-frontend\EShop.Web\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = D:\prn222\ECommercePlatform\EShop\EShop.Web
+build_property.MSBuildProjectDirectory = D:\prn222\code\prn232-react-frontend\EShop.Web
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 8.0
 build_property.EnableCodeStyleSeverity = 
 
-[D:/prn222/ECommercePlatform/EShop/EShop.Web/Pages/Admin/Dashboard.cshtml]
+[D:/prn222/code/prn232-react-frontend/EShop.Web/Pages/Admin/Dashboard.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5cRGFzaGJvYXJkLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/prn222/ECommercePlatform/EShop/EShop.Web/Pages/Cart.cshtml]
+[D:/prn222/code/prn232-react-frontend/EShop.Web/Pages/Cart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2FydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/prn222/ECommercePlatform/EShop/EShop.Web/Pages/Checkout.cshtml]
+[D:/prn222/code/prn232-react-frontend/EShop.Web/Pages/Checkout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2hlY2tvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/prn222/ECommercePlatform/EShop/EShop.Web/Pages/Customer/MyOrders.cshtml]
+[D:/prn222/code/prn232-react-frontend/EShop.Web/Pages/Customer/MyOrders.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ3VzdG9tZXJcTXlPcmRlcnMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/prn222/ECommercePlatform/EShop/EShop.Web/Pages/Error.cshtml]
+[D:/prn222/code/prn232-react-frontend/EShop.Web/Pages/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXJyb3IuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/prn222/ECommercePlatform/EShop/EShop.Web/Pages/Index.cshtml]
+[D:/prn222/code/prn232-react-frontend/EShop.Web/Pages/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/prn222/ECommercePlatform/EShop/EShop.Web/Pages/Login.cshtml]
+[D:/prn222/code/prn232-react-frontend/EShop.Web/Pages/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9naW4uY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/prn222/ECommercePlatform/EShop/EShop.Web/Pages/Logout.cshtml]
+[D:/prn222/code/prn232-react-frontend/EShop.Web/Pages/Logout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9nb3V0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/prn222/ECommercePlatform/EShop/EShop.Web/Pages/OrderSuccess.cshtml]
+[D:/prn222/code/prn232-react-frontend/EShop.Web/Pages/OrderSuccess.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcT3JkZXJTdWNjZXNzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/prn222/ECommercePlatform/EShop/EShop.Web/Pages/Privacy.cshtml]
+[D:/prn222/code/prn232-react-frontend/EShop.Web/Pages/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJpdmFjeS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/prn222/ECommercePlatform/EShop/EShop.Web/Pages/ProductDetail.cshtml]
+[D:/prn222/code/prn232-react-frontend/EShop.Web/Pages/ProductDetail.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJvZHVjdERldGFpbC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/prn222/ECommercePlatform/EShop/EShop.Web/Pages/Register.cshtml]
+[D:/prn222/code/prn232-react-frontend/EShop.Web/Pages/Profile.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJvZmlsZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/prn222/code/prn232-react-frontend/EShop.Web/Pages/Register.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUmVnaXN0ZXIuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/prn222/ECommercePlatform/EShop/EShop.Web/Pages/Seller/CreateProduct.cshtml]
+[D:/prn222/code/prn232-react-frontend/EShop.Web/Pages/Seller/CreateProduct.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2VsbGVyXENyZWF0ZVByb2R1Y3QuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/prn222/ECommercePlatform/EShop/EShop.Web/Pages/Seller/EditProduct.cshtml]
+[D:/prn222/code/prn232-react-frontend/EShop.Web/Pages/Seller/EditProduct.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2VsbGVyXEVkaXRQcm9kdWN0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/prn222/ECommercePlatform/EShop/EShop.Web/Pages/Seller/ManageOrders.cshtml]
+[D:/prn222/code/prn232-react-frontend/EShop.Web/Pages/Seller/ManageOrders.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2VsbGVyXE1hbmFnZU9yZGVycy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/prn222/ECommercePlatform/EShop/EShop.Web/Pages/Seller/ManageProducts.cshtml]
+[D:/prn222/code/prn232-react-frontend/EShop.Web/Pages/Seller/ManageProducts.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2VsbGVyXE1hbmFnZVByb2R1Y3RzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/prn222/ECommercePlatform/EShop/EShop.Web/Pages/Seller/ManageReviews.cshtml]
+[D:/prn222/code/prn232-react-frontend/EShop.Web/Pages/Seller/ManageReviews.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2VsbGVyXE1hbmFnZVJldmlld3MuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/prn222/ECommercePlatform/EShop/EShop.Web/Pages/Shared/_ValidationScriptsPartial.cshtml]
+[D:/prn222/code/prn232-react-frontend/EShop.Web/Pages/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/prn222/ECommercePlatform/EShop/EShop.Web/Pages/_ViewImports.cshtml]
+[D:/prn222/code/prn232-react-frontend/EShop.Web/Pages/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/prn222/ECommercePlatform/EShop/EShop.Web/Pages/_ViewStart.cshtml]
+[D:/prn222/code/prn232-react-frontend/EShop.Web/Pages/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/prn222/ECommercePlatform/EShop/EShop.Web/Pages/Shared/_Layout.cshtml]
+[D:/prn222/code/prn232-react-frontend/EShop.Web/Pages/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-7v49xo0thy

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\prn222\\ECommercePlatform\\EShop\\EShop.Web\\EShop.Web.csproj": {}
+    "D:\\prn222\\code\\prn232-react-frontend\\EShop.Web\\EShop.Web.csproj": {}
   },
   "projects": {
-    "D:\\prn222\\ECommercePlatform\\EShop\\EShop.BLL\\EShop.BLL.csproj": {
+    "D:\\prn222\\code\\prn232-react-frontend\\EShop.BLL\\EShop.BLL.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\prn222\\ECommercePlatform\\EShop\\EShop.BLL\\EShop.BLL.csproj",
+        "projectUniqueName": "D:\\prn222\\code\\prn232-react-frontend\\EShop.BLL\\EShop.BLL.csproj",
         "projectName": "EShop.BLL",
-        "projectPath": "D:\\prn222\\ECommercePlatform\\EShop\\EShop.BLL\\EShop.BLL.csproj",
+        "projectPath": "D:\\prn222\\code\\prn232-react-frontend\\EShop.BLL\\EShop.BLL.csproj",
         "packagesPath": "C:\\Users\\dangq\\.nuget\\packages\\",
-        "outputPath": "D:\\prn222\\ECommercePlatform\\EShop\\EShop.BLL\\obj\\",
+        "outputPath": "D:\\prn222\\code\\prn232-react-frontend\\EShop.BLL\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -32,8 +32,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "D:\\prn222\\ECommercePlatform\\EShop\\EShop.DAL\\EShop.DAL.csproj": {
-                "projectPath": "D:\\prn222\\ECommercePlatform\\EShop\\EShop.DAL\\EShop.DAL.csproj"
+              "D:\\prn222\\code\\prn232-react-frontend\\EShop.DAL\\EShop.DAL.csproj": {
+                "projectPath": "D:\\prn222\\code\\prn232-react-frontend\\EShop.DAL\\EShop.DAL.csproj"
               }
             }
           }
@@ -53,6 +53,12 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
+          "dependencies": {
+            "BCrypt.Net-Next": {
+              "target": "Package",
+              "version": "[4.0.3, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -73,14 +79,14 @@
         }
       }
     },
-    "D:\\prn222\\ECommercePlatform\\EShop\\EShop.DAL\\EShop.DAL.csproj": {
+    "D:\\prn222\\code\\prn232-react-frontend\\EShop.DAL\\EShop.DAL.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\prn222\\ECommercePlatform\\EShop\\EShop.DAL\\EShop.DAL.csproj",
+        "projectUniqueName": "D:\\prn222\\code\\prn232-react-frontend\\EShop.DAL\\EShop.DAL.csproj",
         "projectName": "EShop.DAL",
-        "projectPath": "D:\\prn222\\ECommercePlatform\\EShop\\EShop.DAL\\EShop.DAL.csproj",
+        "projectPath": "D:\\prn222\\code\\prn232-react-frontend\\EShop.DAL\\EShop.DAL.csproj",
         "packagesPath": "C:\\Users\\dangq\\.nuget\\packages\\",
-        "outputPath": "D:\\prn222\\ECommercePlatform\\EShop\\EShop.DAL\\obj\\",
+        "outputPath": "D:\\prn222\\code\\prn232-react-frontend\\EShop.DAL\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -150,14 +156,14 @@
         }
       }
     },
-    "D:\\prn222\\ECommercePlatform\\EShop\\EShop.Web\\EShop.Web.csproj": {
+    "D:\\prn222\\code\\prn232-react-frontend\\EShop.Web\\EShop.Web.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\prn222\\ECommercePlatform\\EShop\\EShop.Web\\EShop.Web.csproj",
+        "projectUniqueName": "D:\\prn222\\code\\prn232-react-frontend\\EShop.Web\\EShop.Web.csproj",
         "projectName": "EShop.Web",
-        "projectPath": "D:\\prn222\\ECommercePlatform\\EShop\\EShop.Web\\EShop.Web.csproj",
+        "projectPath": "D:\\prn222\\code\\prn232-react-frontend\\EShop.Web\\EShop.Web.csproj",
         "packagesPath": "C:\\Users\\dangq\\.nuget\\packages\\",
-        "outputPath": "D:\\prn222\\ECommercePlatform\\EShop\\EShop.Web\\obj\\",
+        "outputPath": "D:\\prn222\\code\\prn232-react-frontend\\EShop.Web\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -178,8 +184,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "D:\\prn222\\ECommercePlatform\\EShop\\EShop.BLL\\EShop.BLL.csproj": {
-                "projectPath": "D:\\prn222\\ECommercePlatform\\EShop\\EShop.BLL\\EShop.BLL.csproj"
+              "D:\\prn222\\code\\prn232-react-frontend\\EShop.BLL\\EShop.BLL.csproj": {
+                "projectPath": "D:\\prn222\\code\\prn232-react-frontend\\EShop.BLL\\EShop.BLL.csproj"
               }
             }
           }
