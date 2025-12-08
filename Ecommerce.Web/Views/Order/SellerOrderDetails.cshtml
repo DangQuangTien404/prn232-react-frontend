@@ -34,16 +34,16 @@
                         @switch (Model.Status)
                         {
                             case OrderStatus.Pending:
-                                <span class="badge bg-warning text-dark">Chờ xử lý</span>
+                                <span class="badge bg-warning text-dark">Chờ xác nhận</span>
                                 break;
                             case OrderStatus.Confirmed:
                                 <span class="badge bg-primary">Đã xác nhận</span>
                                 break;
                             case OrderStatus.Shipping:
-                                <span class="badge bg-info text-dark">Đang giao hàng</span>
+                                <span class="badge bg-info text-dark">Đang giao</span>
                                 break;
                             case OrderStatus.Completed:
-                                <span class="badge bg-success">Hoàn tất</span>
+                                <span class="badge bg-success">Đã giao</span>
                                 break;
                             case OrderStatus.Cancelled:
                                 <span class="badge bg-danger">Đã hủy</span>

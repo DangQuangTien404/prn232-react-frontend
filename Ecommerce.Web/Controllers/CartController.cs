@@ -41,6 +41,17 @@ namespace Ecommerce.Web.Controllers
                 var product = _unitOfWork.ProductRepository.GetById(productId);
                 if (product == null) return NotFound("Sản phẩm không tồn tại");
 
+                var userIdClaim = User.FindFirst("UserId");
+                if (userIdClaim != null)
+                {
+                    int userId = int.Parse(userIdClaim.Value);
+                    if (product.SellerId == userId)
+                    {
+                        TempData["ErrorMessage"] = "Bạn không thể mua sản phẩm của chính mình!";
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
+
                 cartItem = new CartItemVM
                 {
                     ProductId = product.Id,

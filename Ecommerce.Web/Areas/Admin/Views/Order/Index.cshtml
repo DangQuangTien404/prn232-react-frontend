@@ -40,26 +40,22 @@
                                 <td>
                                     @if (item.Status == OrderStatus.Pending)
                                     {
-                                        <span class="badge bg-warning text-dark">Chờ xử lý</span>
+                                        <span class="badge bg-warning text-dark">Chờ xác nhận</span>
                                     }
                                     else if (item.Status == OrderStatus.Confirmed)
                                     {
-
                                         <span class="badge bg-primary">Đã xác nhận</span>
                                     }
                                     else if (item.Status == OrderStatus.Shipping)
                                     {
-
                                         <span class="badge bg-info text-dark">Đang giao</span>
                                     }
                                     else if (item.Status == OrderStatus.Completed)
                                     {
-
-                                        <span class="badge bg-success">Hoàn tất</span>
+                                        <span class="badge bg-success">Đã giao</span>
                                     }
                                     else
                                     {
-
                                         <span class="badge bg-secondary">Đã hủy</span>
                                     }
                                 </td>

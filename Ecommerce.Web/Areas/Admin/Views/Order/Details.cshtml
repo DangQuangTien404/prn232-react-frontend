@@ -17,26 +17,22 @@
         <div>
             @if (Model.Status == OrderStatus.Pending)
             {
-                <span class="badge bg-warning text-dark fs-6">Chờ xử lý</span>
+                <span class="badge bg-warning text-dark fs-6">Chờ xác nhận</span>
             }
             else if (Model.Status == OrderStatus.Confirmed)
             {
-
                 <span class="badge bg-primary fs-6">Đã xác nhận</span>
             }
             else if (Model.Status == OrderStatus.Shipping)
             {
-
                 <span class="badge bg-info text-dark fs-6">Đang giao</span>
             }
             else if (Model.Status == OrderStatus.Completed)
             {
-
-                <span class="badge bg-success fs-6">Hoàn tất</span>
+                <span class="badge bg-success fs-6">Đã giao</span>
             }
             else
             {
-
                 <span class="badge bg-secondary fs-6">Đã hủy</span>
             }
         </div>
