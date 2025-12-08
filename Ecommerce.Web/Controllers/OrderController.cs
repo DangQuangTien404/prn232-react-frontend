@@ -145,7 +145,14 @@ namespace Ecommerce.Web.Controllers
             var userId = int.Parse(User.FindFirst("UserId").Value);
             var orders = _unitOfWork.OrderRepository
                 .Find(o => o.OrderDetails.Any(od => od.Product.SellerId == userId))
-                .OrderByDescending(o => o.OrderDate);
+                .OrderByDescending(o => o.OrderDate)
+                .ToList();
+
+            foreach (var order in orders)
+            {
+                order.Customer = _unitOfWork.UserRepository.GetById(order.CustomerId);
+            }
+
             return View(orders);
         }
 
