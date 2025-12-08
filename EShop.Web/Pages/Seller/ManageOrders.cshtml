@@ -79,12 +79,18 @@
                                         <button type="submit" name="statusId" value="@((int)OrderStatus.Processing)" class="btn btn-sm btn-primary">
                                             <i class="bi bi-check-lg"></i> Xác nhận
                                         </button>
+                                        <button type="submit" name="statusId" value="@((int)OrderStatus.Cancelled)" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?');">
+                                            <i class="bi bi-x-lg"></i> Hủy đơn
+                                        </button>
                                     }
 
                                     @if (item.Order.Status == OrderStatus.Processing)
                                     {
                                         <button type="submit" name="statusId" value="@((int)OrderStatus.Shipped)" class="btn btn-sm btn-info">
                                             <i class="bi bi-truck"></i> Giao hàng
+                                        </button>
+                                        <button type="submit" name="statusId" value="@((int)OrderStatus.Cancelled)" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?');">
+                                            <i class="bi bi-x-lg"></i> Hủy đơn
                                         </button>
                                     }
 
