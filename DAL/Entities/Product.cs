@@ -19,5 +19,8 @@ namespace DAL.Entities
         [ForeignKey("SellerId")]
         public User Seller { get; set; }
         public bool IsDeleted { get; set; } = false;
+
+        [NotMapped]
+        public virtual ICollection<Review> Reviews { get; set; }
     }
 }

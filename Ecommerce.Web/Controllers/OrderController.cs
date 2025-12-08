@@ -181,6 +181,9 @@ namespace Ecommerce.Web.Controllers
 
             order.OrderDetails = sellerDetails;
 
+            // Manual fetch user info to fix Issue 2
+            order.Customer = _unitOfWork.UserRepository.GetById(order.CustomerId);
+
             return View(order);
         }
 

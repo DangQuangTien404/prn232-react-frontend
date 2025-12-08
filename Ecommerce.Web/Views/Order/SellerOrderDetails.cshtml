@@ -25,7 +25,7 @@
                     <h5 class="card-title mb-0">Thông tin khách hàng</h5>
                 </div>
                 <div class="card-body">
-                    <p><strong>Mã khách hàng:</strong> @Model.CustomerId</p>
+                    <p><strong>Khách hàng:</strong> @(Model.Customer != null ? Model.Customer.FullName : Model.CustomerId.ToString())</p>
                     <p><strong>Ngày đặt:</strong> @Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</p>
                     <p><strong>Thanh toán:</strong> <span class="badge bg-secondary">@Model.PaymentMethod</span></p>
                     <p><strong>Tổng tiền:</strong> <span class="text-danger fw-bold fs-5">@Model.TotalAmount.ToString("#,##0") đ</span></p>

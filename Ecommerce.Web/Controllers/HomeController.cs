@@ -23,6 +23,11 @@ namespace Web.Controllers
                             .Find(p => !p.IsDeleted) 
                             .ToList();
 
+            foreach (var product in products)
+            {
+                product.Reviews = _unitOfWork.ReviewRepository.Find(r => r.ProductId == product.Id).ToList();
+            }
+
             return View(products);
         }
 

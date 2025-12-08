@@ -25,10 +25,12 @@ namespace Ecommerce.Web.Controllers
             var userId = int.Parse(userIdClaim.Value);
 
             // Kiểm tra: Khách đã mua và đơn hàng đã hoàn tất chưa?
-            var hasPurchased = _unitOfWork.OrderRepository
-                .Find(o => o.CustomerId == userId && o.Status == OrderStatus.Completed)
-                .Any(o => _unitOfWork.OrderDetailRepository
-                    .Find(d => d.OrderId == o.Id && d.ProductId == productId).Any());
+            // Sử dụng OrderDetailRepository trực tiếp theo hướng dẫn tối ưu hiệu năng
+            var hasPurchased = _unitOfWork.OrderDetailRepository.Find(od =>
+                od.ProductId == productId &&
+                od.Order.CustomerId == userId &&
+                od.Order.Status == OrderStatus.Completed
+            ).Any();
 
             if (!hasPurchased)
             {
