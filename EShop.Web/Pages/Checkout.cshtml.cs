@@ -2,9 +2,11 @@
 using EShop.BLL.Services;
 using EShop.DAL.Enums;
 using EShop.Web.Helpers;
+using EShop.Web.Hubs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.SignalR;
 
 namespace EShop.Web.Pages
 {
@@ -12,10 +14,12 @@ namespace EShop.Web.Pages
     public class CheckoutModel : PageModel
     {
         private readonly IOrderService _orderService;
+        private readonly IHubContext<ECommerceHub> _hubContext;
 
-        public CheckoutModel(IOrderService orderService)
+        public CheckoutModel(IOrderService orderService, IHubContext<ECommerceHub> hubContext)
         {
             _orderService = orderService;
+            _hubContext = hubContext;
         }
 
         public List<CartItem> CartItems { get; set; }
@@ -48,6 +52,9 @@ namespace EShop.Web.Pages
 
             // 3. Gọi Service tạo đơn hàng
             int orderId = await _orderService.CreateOrderAsync(customerId, cart, SelectedPaymentMethod);
+
+            // 3b. Gửi thông báo SignalR (Real-time)
+            await _hubContext.Clients.All.SendAsync("ReceiveMessage", "System", $"Có đơn hàng mới #{orderId} vừa được tạo!");
 
             // 4. Xóa giỏ hàng sau khi đặt thành công
             HttpContext.Session.Remove("Cart");
