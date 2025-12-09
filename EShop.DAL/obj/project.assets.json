@@ -4021,11 +4021,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\prn222\\ECommercePlatform\\EShop\\EShop.DAL\\EShop.DAL.csproj",
+      "projectUniqueName": "D:\\prn222\\code\\prn232-react-frontend\\EShop.DAL\\EShop.DAL.csproj",
       "projectName": "EShop.DAL",
-      "projectPath": "D:\\prn222\\ECommercePlatform\\EShop\\EShop.DAL\\EShop.DAL.csproj",
+      "projectPath": "D:\\prn222\\code\\prn232-react-frontend\\EShop.DAL\\EShop.DAL.csproj",
       "packagesPath": "C:\\Users\\dangq\\.nuget\\packages\\",
-      "outputPath": "D:\\prn222\\ECommercePlatform\\EShop\\EShop.DAL\\obj\\",
+      "outputPath": "D:\\prn222\\code\\prn232-react-frontend\\EShop.DAL\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

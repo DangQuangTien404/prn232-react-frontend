@@ -15,89 +15,106 @@
     else
     {
         <div class="table-responsive">
-            <table class="table table-hover border">
+            <table class="table table-hover border align-middle">
                 <thead class="table-light">
                     <tr>
                         <th>Mã đơn</th>
                         <th>Ngày đặt</th>
-                        <th>Sản phẩm</th>
+                        <th style="min-width: 250px;">Sản phẩm</th>
                         <th>Khách hàng</th>
-                        <th>Số lượng</th>
-                        <th>Tổng tiền (Món)</th>
+                        <th class="text-center">Số lượng</th>
+                        <th>Tổng tiền</th>
                         <th>Trạng thái</th>
                         <th>Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.SellerOrderDetails)
+                    @* --- LOGIC SỬA LỖI: GroupBy OrderId để gom nhóm --- *@
+                    @foreach (var group in Model.SellerOrderDetails.GroupBy(x => x.OrderId))
                     {
+                        var order = group.First().Order; // Lấy thông tin chung
+                        var totalAmount = group.Sum(x => x.Quantity * x.UnitPrice);
+                        var totalQty = group.Sum(x => x.Quantity);
+
                         <tr>
-                            <td>#@item.OrderId</td>
-                            <td>@item.Order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    @if (!string.IsNullOrEmpty(item.Product.ImageUrl))
-                                    {
-                                        <img src="@item.Product.ImageUrl" style="width: 40px; height: 40px; object-fit: cover; margin-right: 10px;" class="rounded" />
-                                    }
-                                    <span class="fw-bold">@item.Product.Name</span>
-                                </div>
-                            </td>
-                            <td>@item.Order.Customer.FullName</td>
-                            <td>@item.Quantity</td>
-                            <td>@((item.UnitPrice * item.Quantity).ToString("N0")) đ</td>
+                            <td><strong>#@order.Id</strong></td>
+
+                            <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
 
                             <td>
-                                @if (item.Order.Status == OrderStatus.Pending)
+                                @foreach (var detail in group)
                                 {
-                                    <span class="badge bg-warning text-dark">Chờ xác nhận</span>
-                                }
-                                else if (item.Order.Status == OrderStatus.Processing)
-                                {
-                                    <span class="badge bg-primary">Đang chuẩn bị</span>
-                                }
-                                else if (item.Order.Status == OrderStatus.Shipped)
-                                {
-                                    <span class="badge bg-info text-dark">Đang giao</span>
-                                }
-                                else if (item.Order.Status == OrderStatus.Completed)
-                                {
-                                    <span class="badge bg-success">Hoàn thành</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-secondary">@item.Order.Status</span>
+                                    <div class="d-flex align-items-center mb-2 border-bottom pb-2 last-no-border">
+                                        @if (!string.IsNullOrEmpty(detail.Product.ImageUrl))
+                                        {
+                                            <img src="@detail.Product.ImageUrl" style="width: 40px; height: 40px; object-fit: cover; margin-right: 10px;" class="rounded border" />
+                                        }
+                                        <div>
+                                            <span class="fw-bold d-block text-truncate" style="max-width: 200px;">@detail.Product.Name</span>
+                                            <small class="text-muted">@detail.Quantity x @detail.UnitPrice.ToString("N0") đ</small>
+                                        </div>
+                                    </div>
                                 }
                             </td>
 
                             <td>
-                                <form method="post" asp-page-handler="UpdateStatus" class="d-flex gap-2">
-                                    <input type="hidden" name="orderId" value="@item.OrderId" />
+                                @(order.Customer != null ? order.Customer.FullName : "Khách vãng lai")
+                            </td>
 
-                                    @if (item.Order.Status == OrderStatus.Pending)
+                            <td class="text-center">@totalQty</td>
+
+                            <td class="fw-bold text-danger">@totalAmount.ToString("N0") đ</td>
+
+                            <td>
+                                @switch (order.Status)
+                                {
+                                    case OrderStatus.Pending:
+                                        <span class="badge bg-warning text-dark">Chờ xác nhận</span>
+                                        break;
+                                    case OrderStatus.Processing:
+                                        <span class="badge bg-primary">Đang chuẩn bị</span>
+                                        break;
+                                    case OrderStatus.Shipped:
+                                        <span class="badge bg-info text-dark">Đang giao</span>
+                                        break;
+                                    case OrderStatus.Completed:
+                                        <span class="badge bg-success">Hoàn thành</span>
+                                        break;
+                                    case OrderStatus.Cancelled:
+                                        <span class="badge bg-danger">Đã hủy</span>
+                                        break;
+                                    default:
+                                        <span class="badge bg-secondary">@order.Status</span>
+                                        break;
+                                }
+                            </td>
+
+                            <td>
+                                <form method="post" asp-page-handler="UpdateStatus" class="d-flex flex-column gap-1">
+                                    <input type="hidden" name="orderId" value="@order.Id" />
+
+                                    @if (order.Status == OrderStatus.Pending)
                                     {
-                                        <button type="submit" name="statusId" value="@((int)OrderStatus.Processing)" class="btn btn-sm btn-primary">
+                                        <button type="submit" name="statusId" value="@((int)OrderStatus.Processing)" class="btn btn-sm btn-primary w-100">
                                             <i class="bi bi-check-lg"></i> Xác nhận
                                         </button>
-                                        <button type="submit" name="statusId" value="@((int)OrderStatus.Cancelled)" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?');">
-                                            <i class="bi bi-x-lg"></i> Hủy đơn
+                                        <button type="submit" name="statusId" value="@((int)OrderStatus.Cancelled)" class="btn btn-sm btn-outline-danger w-100" onclick="return confirm('Hủy đơn hàng này?');">
+                                            <i class="bi bi-x"></i> Hủy
                                         </button>
                                     }
-
-                                    @if (item.Order.Status == OrderStatus.Processing)
+                                    else if (order.Status == OrderStatus.Processing)
                                     {
-                                        <button type="submit" name="statusId" value="@((int)OrderStatus.Shipped)" class="btn btn-sm btn-info">
+                                        <button type="submit" name="statusId" value="@((int)OrderStatus.Shipped)" class="btn btn-sm btn-info text-white w-100">
                                             <i class="bi bi-truck"></i> Giao hàng
                                         </button>
-                                        <button type="submit" name="statusId" value="@((int)OrderStatus.Cancelled)" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?');">
-                                            <i class="bi bi-x-lg"></i> Hủy đơn
+                                        <button type="submit" name="statusId" value="@((int)OrderStatus.Cancelled)" class="btn btn-sm btn-outline-danger w-100" onclick="return confirm('Hủy đơn hàng này?');">
+                                            <i class="bi bi-x"></i> Hủy
                                         </button>
                                     }
-
-                                    @if (item.Order.Status == OrderStatus.Shipped)
+                                    else if (order.Status == OrderStatus.Shipped)
                                     {
-                                        <button type="submit" name="statusId" value="@((int)OrderStatus.Completed)" class="btn btn-sm btn-success">
-                                            <i class="bi bi-star"></i> Hoàn tất
+                                        <button type="submit" name="statusId" value="@((int)OrderStatus.Completed)" class="btn btn-sm btn-success w-100">
+                                            <i class="bi bi-star-fill"></i> Hoàn tất
                                         </button>
                                     }
                                 </form>
@@ -109,6 +126,14 @@
         </div>
     }
 </div>
+
+<style>
+    .last-no-border:last-child {
+        border-bottom: none !important;
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
+    }
+</style>
 
 @section Scripts {
     <!-- SignalR Library -->

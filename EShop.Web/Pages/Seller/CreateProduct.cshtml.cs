@@ -1,9 +1,11 @@
 ﻿using EShop.BLL.Services;
 using EShop.DAL.Entities;
+using EShop.Web.Hubs; // Thêm dòng này
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.SignalR; // Thêm dòng này
 using System.IO;
 using System.Linq;
 
@@ -13,16 +15,18 @@ namespace EShop.Web.Pages.Seller
     public class CreateProductModel : PageModel
     {
         private readonly IProductService _productService;
+        private readonly IHubContext<ECommerceHub> _hubContext; // 1. Khai báo Hub
 
-        public CreateProductModel(IProductService productService)
+        // 2. Inject Hub vào Constructor
+        public CreateProductModel(IProductService productService, IHubContext<ECommerceHub> hubContext)
         {
             _productService = productService;
+            _hubContext = hubContext;
         }
 
         [BindProperty]
         public Product ProductInput { get; set; }
 
-        // === SỬA Ở ĐÂY: Thêm dấu ? để cho phép không chọn ảnh cũng được ===
         [BindProperty]
         public IFormFile? ImageFile { get; set; }
 
@@ -34,14 +38,10 @@ namespace EShop.Web.Pages.Seller
 
         public async Task<IActionResult> OnPostAsync()
         {
-            // === QUAN TRỌNG: Xóa các lỗi kiểm tra không cần thiết ===
             ModelState.Remove("ProductInput.Seller");
             ModelState.Remove("ProductInput.Reviews");
             ModelState.Remove("ProductInput.ImageUrl");
-
-            // Thêm dòng này để fix lỗi "ImageFile field is required" (Hình 2)
             ModelState.Remove("ImageFile");
-            // ========================================================
 
             if (!ModelState.IsValid)
             {
@@ -49,8 +49,6 @@ namespace EShop.Web.Pages.Seller
                 ErrorMessage = "Dữ liệu nhập không hợp lệ: " + string.Join(", ", errors);
                 return Page();
             }
-
-            // ... (Đoạn code xử lý Upload ảnh và Lưu giữ nguyên như cũ) ...
 
             if (ImageFile != null && ImageFile.Length > 0)
             {
@@ -73,8 +71,14 @@ namespace EShop.Web.Pages.Seller
             if (int.TryParse(userIdStr, out int sellerId))
             {
                 ProductInput.SellerId = sellerId;
+
+                // Lưu sản phẩm vào DB
                 await _productService.AddProductAsync(ProductInput);
-                return RedirectToPage("/Index");
+
+                // 3. CODE MỚI: Gửi tín hiệu SignalR cập nhật sản phẩm
+                await _hubContext.Clients.All.SendAsync("ReceiveProductUpdate", "Có sản phẩm mới vừa lên kệ!");
+
+                return RedirectToPage("/Index"); // Chuyển về trang quản lý của Seller (hoặc trang chủ)
             }
 
             ErrorMessage = "Lỗi xác thực người dùng.";
