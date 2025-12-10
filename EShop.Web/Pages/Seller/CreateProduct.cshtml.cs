@@ -17,7 +17,6 @@ namespace EShop.Web.Pages.Seller
         private readonly IProductService _productService;
         private readonly IHubContext<ECommerceHub> _hubContext; // 1. Khai báo Hub
 
-        // 2. Inject Hub vào Constructor
         public CreateProductModel(IProductService productService, IHubContext<ECommerceHub> hubContext)
         {
             _productService = productService;
@@ -72,10 +71,8 @@ namespace EShop.Web.Pages.Seller
             {
                 ProductInput.SellerId = sellerId;
 
-                // Lưu sản phẩm vào DB
                 await _productService.AddProductAsync(ProductInput);
 
-                // 3. CODE MỚI: Gửi tín hiệu SignalR cập nhật sản phẩm
                 await _hubContext.Clients.All.SendAsync("ReceiveProductUpdate", "Có sản phẩm mới vừa lên kệ!");
 
                 return RedirectToPage("/Index"); // Chuyển về trang quản lý của Seller (hoặc trang chủ)

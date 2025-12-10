@@ -23,17 +23,13 @@ namespace EShop.Web.Pages
             Products = await _productService.GetAllProductsAsync();
         }
 
-        // === Code xử lý thêm vào giỏ ===
         public async Task<IActionResult> OnPostAddToCartAsync(int id)
         {
-            // 1. Lấy thông tin sản phẩm từ DB
             var product = await _productService.GetProductByIdAsync(id);
             if (product == null) return NotFound();
 
-            // 2. Lấy giỏ hàng hiện tại từ Session (nếu chưa có thì tạo mới)
             var cart = HttpContext.Session.GetObject<List<CartItem>>("Cart") ?? new List<CartItem>();
 
-            // 3. Kiểm tra sản phẩm đã có trong giỏ chưa
             var existingItem = cart.FirstOrDefault(x => x.ProductId == id);
             if (existingItem != null)
             {
@@ -41,7 +37,6 @@ namespace EShop.Web.Pages
             }
             else
             {
-                // Chưa có thì thêm mới
                 cart.Add(new CartItem
                 {
                     ProductId = product.Id,
@@ -51,10 +46,8 @@ namespace EShop.Web.Pages
                 });
             }
 
-            // 4. Lưu ngược lại vào Session
             HttpContext.Session.SetObject("Cart", cart);
 
-            // 5. Load lại trang
             return RedirectToPage();
         }
     }

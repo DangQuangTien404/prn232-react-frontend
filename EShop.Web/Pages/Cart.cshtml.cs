@@ -15,7 +15,6 @@ namespace EShop.Web.Pages
             CartItems = HttpContext.Session.GetObject<List<CartItem>>("Cart") ?? new List<CartItem>();
         }
 
-        // Chức năng Xóa sản phẩm khỏi giỏ
         public IActionResult OnPostRemove(int id)
         {
             var cart = HttpContext.Session.GetObject<List<CartItem>>("Cart") ?? new List<CartItem>();

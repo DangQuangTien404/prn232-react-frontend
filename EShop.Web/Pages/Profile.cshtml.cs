@@ -66,8 +66,6 @@ namespace EShop.Web.Pages
             user.FullName = FullName;
             await _userService.UpdateUserAsync(user);
 
-            // Update user in memory is not enough if claims are used for display name, but usually FullName is fetched.
-            // If claims store FullName, we might need to refresh sign-in, but here we just update DB.
 
             TempData["SuccessMessage"] = "Cập nhật hồ sơ thành công!";
             Username = user.Username; // Restore username for display

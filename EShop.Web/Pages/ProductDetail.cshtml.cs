@@ -21,7 +21,6 @@ namespace EShop.Web.Pages
         public Product Product { get; set; }
         public List<Review> Reviews { get; set; } = new List<Review>();
 
-        // Các biến để binding form đánh giá
         [BindProperty]
         public int RatingInput { get; set; }
         [BindProperty]
@@ -36,7 +35,6 @@ namespace EShop.Web.Pages
             return Page();
         }
 
-        // Xử lý khi khách hàng gửi đánh giá
         public async Task<IActionResult> OnPostAddReviewAsync(int id)
         {
             if (!User.Identity.IsAuthenticated) return RedirectToPage("/Login");
@@ -44,12 +42,9 @@ namespace EShop.Web.Pages
             var userIdStr = User.FindFirst("UserId")?.Value;
             if (int.TryParse(userIdStr, out int customerId))
             {
-                // Validation: Seller cannot review their own product
                 var product = await _productService.GetProductByIdAsync(id);
                 if (product != null && product.SellerId == customerId)
                 {
-                    // Seller đang tự review sản phẩm của mình
-                    // Có thể thêm TempData Error Message ở đây
                     return RedirectToPage(new { id = id });
                 }
 
@@ -59,12 +54,8 @@ namespace EShop.Web.Pages
             return RedirectToPage(new { id = id }); // Load lại trang
         }
 
-        // Xử lý thêm vào giỏ (Copy từ trang Index qua để dùng được ở đây luôn)
         public async Task<IActionResult> OnPostAddToCartAsync(int id)
         {
-            // (Bạn có thể gọi lại logic AddToCart giống IndexModel, hoặc điều hướng về Index để xử lý)
-            // Để đơn giản, ta tạm thời redirect về Index rồi thêm sau, 
-            // hoặc bạn copy hàm OnPostAddToCart từ Index.cshtml.cs sang đây.
             return RedirectToPage("/Index");
         }
     }
