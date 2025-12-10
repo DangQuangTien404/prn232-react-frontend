@@ -28,16 +28,13 @@ namespace EShop.Web.Pages.Seller
             }
         }
 
-        // XỬ LÝ XÓA SẢN PHẨM
         public async Task<IActionResult> OnPostDeleteAsync(int id)
         {
             var product = await _productService.GetProductByIdAsync(id);
 
-            // Kiểm tra bảo mật: Phải đúng là hàng của mình mới được xóa
             var userIdStr = User.FindFirst("UserId")?.Value;
             if (product != null && userIdStr == product.SellerId.ToString())
             {
-                // 1. Xóa ảnh cũ trong thư mục wwwroot (để tiết kiệm dung lượng server)
                 if (!string.IsNullOrEmpty(product.ImageUrl))
                 {
                     var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", product.ImageUrl.TrimStart('/'));
@@ -47,7 +44,6 @@ namespace EShop.Web.Pages.Seller
                     }
                 }
 
-                // 2. Xóa trong Database
                 await _productService.DeleteProductAsync(id);
             }
 

@@ -31,7 +31,6 @@ namespace EShop.Web.Pages
                 return Page();
             }
 
-            // Gọi Service xử lý logic
             var result = await _userService.RegisterAsync(RegisterInput);
             if (!result)
             {

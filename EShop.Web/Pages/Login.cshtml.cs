@@ -40,7 +40,6 @@ namespace EShop.Web.Pages
                 return Page();
             }
 
-            // Tạo Claims (Dữ liệu lưu trong Cookie)
             var claims = new List<Claim>
     {
         new Claim(ClaimTypes.Name, user.Username),
@@ -60,8 +59,6 @@ namespace EShop.Web.Pages
                 new ClaimsPrincipal(claimsIdentity),
                 authProperties);
 
-            // SỬA LẠI ĐOẠN NÀY:
-            // Thay vì chia luồng Dashboard chưa tồn tại, ta cho tất cả về trang chủ
             return RedirectToPage("/Index");
         }
     }

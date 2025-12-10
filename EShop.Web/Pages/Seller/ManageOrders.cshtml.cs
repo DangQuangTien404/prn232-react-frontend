@@ -43,11 +43,8 @@ namespace EShop.Web.Pages.Seller
 
             var status = (OrderStatus)statusId;
 
-            // 1. Cập nhật trong Database (đã bao gồm logic hoàn kho nếu Hủy)
             await _orderService.UpdateStatusAsync(orderId, status);
 
-            // 2. Gửi tín hiệu SignalR cho Client
-            // Gửi: Mã đơn hàng + Tên trạng thái mới
             await _hubContext.Clients.All.SendAsync("ReceiveOrderStatusUpdate", orderId, status.ToString());
 
             TempData["SuccessMessage"] = $"Đơn hàng #{orderId} đã cập nhật thành công!";

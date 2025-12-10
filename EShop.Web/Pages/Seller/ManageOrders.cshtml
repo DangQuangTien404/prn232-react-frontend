@@ -139,18 +139,13 @@
     <!-- SignalR Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
     <script>
-        // 1. Kết nối
         var connection = new signalR.HubConnectionBuilder().withUrl("/ecommerceHub").build();
 
-        // 2. Lắng nghe
         connection.on("ReceiveMessage", function (user, message) {
-            // Hiện thông báo
             alert(message);
-            // Tải lại trang để cập nhật danh sách
             location.reload();
         });
 
-        // 3. Start kết nối
         connection.start().then(function () {
             console.log("SignalR Connected!");
         }).catch(function (err) {
