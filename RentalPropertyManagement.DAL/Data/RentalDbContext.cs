@@ -15,6 +15,7 @@ namespace RentalPropertyManagement.DAL.Data
         public DbSet<Property> Properties { get; set; }
         public DbSet<Contract> Contracts { get; set; }
         public DbSet<MaintenanceRequest> MaintenanceRequests { get; set; }
+        public DbSet<Message> Messages { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -46,6 +47,19 @@ namespace RentalPropertyManagement.DAL.Data
                 .HasOne(c => c.Tenant)
                 .WithMany(u => u.ContractsAsTenant)
                 .HasForeignKey(c => c.TenantId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // 4. Cấu hình cho Message
+            modelBuilder.Entity<Message>()
+                .HasOne(m => m.Sender)
+                .WithMany()
+                .HasForeignKey(m => m.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Message>()
+                .HasOne(m => m.Receiver)
+                .WithMany()
+                .HasForeignKey(m => m.ReceiverId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

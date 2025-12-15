@@ -1,0 +1,223 @@
+@page
+@model RentalPropertyManagement.Web.Pages.Communication.ChatModel
+@{
+    ViewData["Title"] = "Tin nhắn";
+}
+
+<style>
+    .chat-container {
+        display: flex;
+        height: 600px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+    .contacts-list {
+        width: 30%;
+        border-right: 1px solid #ddd;
+        overflow-y: auto;
+    }
+    .chat-area {
+        width: 70%;
+        display: flex;
+        flex-direction: column;
+    }
+    .contact-item {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+        cursor: pointer;
+    }
+    .contact-item:hover, .contact-item.active {
+        background-color: #f0f8ff;
+    }
+    .messages-box {
+        flex-grow: 1;
+        padding: 20px;
+        overflow-y: auto;
+        background-color: #fafafa;
+    }
+    .message {
+        margin-bottom: 15px;
+        padding: 10px 15px;
+        border-radius: 10px;
+        max-width: 70%;
+    }
+    .message.sent {
+        background-color: #007bff;
+        color: white;
+        margin-left: auto;
+        text-align: right;
+    }
+    .message.received {
+        background-color: #e9ecef;
+        color: black;
+        margin-right: auto;
+    }
+    .input-area {
+        padding: 20px;
+        border-top: 1px solid #ddd;
+        display: flex;
+    }
+    .input-area input {
+        flex-grow: 1;
+        margin-right: 10px;
+    }
+</style>
+
+<div class="container mt-4">
+    <h2>Trò chuyện</h2>
+    @Html.AntiForgeryToken()
+
+    <div class="chat-container">
+        <!-- Sidebar: Danh sách liên hệ -->
+        <div class="contacts-list">
+            <h5 class="p-3 border-bottom">Danh sách liên hệ</h5>
+            @if (Model.Contacts != null)
+            {
+                foreach (var contact in Model.Contacts)
+                {
+                    <div class="contact-item @(Model.ReceiverId == contact.Id ? "active" : "")"
+                         onclick="location.href='?receiverId=@contact.Id'">
+                        <strong>@contact.FullName</strong>
+                        <br/>
+                        <small class="text-muted">@contact.Role</small>
+                    </div>
+                }
+            }
+        </div>
+
+        <!-- Main Chat Area -->
+        <div class="chat-area">
+            @if (Model.ReceiverId.HasValue)
+            {
+                <div class="p-3 border-bottom bg-white">
+                    <h5>Đang chat với: <strong>@(Model.CurrentContact?.FullName ?? "Unknown")</strong></h5>
+                </div>
+
+                <div class="messages-box" id="messagesList">
+                    @if (Model.ChatHistory != null)
+                    {
+                        foreach (var msg in Model.ChatHistory)
+                        {
+                            var isSent = msg.SenderId == Model.CurrentUserId;
+                            <div class="message @(isSent ? "sent" : "received")">
+                                <div>@msg.Content</div>
+                                <small style="font-size: 0.7em;">@msg.Timestamp.ToString("HH:mm dd/MM")</small>
+                            </div>
+                        }
+                    }
+                </div>
+
+                <div class="input-area">
+                    <input type="text" id="messageInput" class="form-control" placeholder="Nhập tin nhắn..." />
+                    <button class="btn btn-primary" id="sendButton">Gửi</button>
+                </div>
+            }
+            else
+            {
+                <div class="d-flex align-items-center justify-content-center h-100">
+                    <p class="text-muted">Chọn một người dùng để bắt đầu trò chuyện.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- SignalR & Chat Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
+<script>
+    const currentUserId = @Model.CurrentUserId;
+    const receiverId = @(Model.ReceiverId ?? 0);
+
+    // 1. Setup SignalR Connection
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/chatHub")
+        .build();
+
+    // 2. Receive Message Handler
+    connection.on("ReceiveMessage", function (senderId, message, timestamp) {
+        // Only append if it belongs to this conversation
+        // If I sent it (senderId == currentUserId) -> Append as sent
+        // If they sent it (senderId == receiverId) -> Append as received
+
+        if (senderId === currentUserId || senderId === receiverId) {
+            const msgDiv = document.createElement("div");
+            const isSent = senderId === currentUserId;
+            msgDiv.className = isSent ? "message sent" : "message received";
+
+            // Format time simply
+            const date = new Date(timestamp);
+            const timeStr = date.getHours().toString().padStart(2, '0') + ":" + date.getMinutes().toString().padStart(2, '0') + " " + date.getDate() + "/" + (date.getMonth() + 1);
+
+            msgDiv.innerHTML = `<div>${escapeHtml(message)}</div><small style="font-size: 0.7em;">${timeStr}</small>`;
+
+            const box = document.getElementById("messagesList");
+            if (box) {
+                box.appendChild(msgDiv);
+                box.scrollTop = box.scrollHeight; // Auto scroll to bottom
+            }
+        } else {
+            // Notification logic could go here (e.g. toast) for messages from other users
+            // alert("New message from user " + senderId);
+        }
+    });
+
+    connection.start().catch(function (err) {
+        return console.error(err.toString());
+    });
+
+    // 3. Send Message Handler
+    const sendBtn = document.getElementById("sendButton");
+    const msgInput = document.getElementById("messageInput");
+
+    if (sendBtn && msgInput) {
+        // Send on Enter key
+        msgInput.addEventListener("keyup", function(event) {
+            if (event.key === "Enter") {
+                sendBtn.click();
+            }
+        });
+
+        sendBtn.addEventListener("click", function (event) {
+            const message = msgInput.value;
+            if (!message.trim()) return;
+
+            // AJAX Post with Form Data
+            const formData = new FormData();
+            formData.append('receiverId', receiverId);
+            formData.append('message', message);
+            // Append Anti-Forgery Token
+            formData.append('__RequestVerificationToken', document.getElementsByName('__RequestVerificationToken')[0].value);
+
+            fetch('?handler=SendMessage', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    msgInput.value = "";
+                } else {
+                    alert("Error sending message");
+                }
+            })
+            .catch(error => console.error('Error:', error));
+
+            event.preventDefault();
+        });
+    }
+
+    // Scroll to bottom on load
+    window.onload = function() {
+        const box = document.getElementById("messagesList");
+        if (box) box.scrollTop = box.scrollHeight;
+    };
+
+    function escapeHtml(text) {
+        if (!text) return text;
+        return text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+</script>

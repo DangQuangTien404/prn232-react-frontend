@@ -54,6 +54,8 @@ namespace RentalPropertyManagement.Web.Pages
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, userDto.Id.ToString()),
+                // Add explicit UserId claim to match Chat usage if needed, or stick to NameIdentifier
+                new Claim("UserId", userDto.Id.ToString()),
                 new Claim(ClaimTypes.Name, userDto.FullName),
                 new Claim(ClaimTypes.Email, userDto.Email),
                 new Claim(ClaimTypes.Role, userDto.Role)
