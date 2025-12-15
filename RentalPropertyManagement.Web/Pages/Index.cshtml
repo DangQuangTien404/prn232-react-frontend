@@ -1,0 +1,72 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Dashboard Chính";
+}
+
+<div class="container mt-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4">Chào mừng, @Model.UserFullName!</h1>
+        <p class="lead">Bạn đang đăng nhập với vai trò: <strong>@Model.UserRole</strong></p>
+    </div>
+
+    @* Hiển thị các chức năng chính dựa trên vai trò *@
+    <div class="row justify-content-center">
+
+        @if (Model.UserRole == "Landlord")
+        {
+            <div class="col-md-4 mb-3">
+                <a asp-page="/Contracts/Create" class="btn btn-primary btn-lg w-100 py-3">
+                    <i class="fas fa-file-contract"></i> Quản lý Hợp đồng
+                </a>
+            </div>
+            <div class="col-md-4 mb-3">
+                <a asp-page="/Maintenance/Inbox" class="btn btn-warning btn-lg w-100 py-3">
+                    <i class="fas fa-tools"></i> Phê duyệt Bảo trì
+                </a>
+            </div>
+            <div class="col-md-4 mb-3">
+                <a asp-page="/Payments/Track" class="btn btn-success btn-lg w-100 py-3">
+                    <i class="fas fa-money-check-alt"></i> Theo dõi Thanh toán
+                </a>
+            </div>
+        }
+        else if (Model.UserRole == "Tenant")
+        {
+            <div class="col-md-4 mb-3">
+                <a asp-page="/Tenant/SubmitRequest" class="btn btn-danger btn-lg w-100 py-3">
+                    <i class="fas fa-exclamation-triangle"></i> Gửi Yêu cầu Bảo trì
+                </a>
+            </div>
+            <div class="col-md-4 mb-3">
+                <a asp-page="/Tenant/MyContracts" class="btn btn-info btn-lg w-100 py-3">
+                    <i class="fas fa-file-alt"></i> Xem Hợp đồng
+                </a>
+            </div>
+            <div class="col-md-4 mb-3">
+                <a asp-page="/Tenant/MakePayment" class="btn btn-success btn-lg w-100 py-3">
+                    <i class="fas fa-wallet"></i> Thanh toán Tiền thuê
+                </a>
+            </div>
+        }
+        else if (Model.UserRole == "ServiceProvider")
+        {
+            <div class="col-md-6 mb-3">
+                <a asp-page="/Provider/MyTasks" class="btn btn-secondary btn-lg w-100 py-3">
+                    <i class="fas fa-tasks"></i> Công việc được giao
+                </a>
+            </div>
+            <div class="col-md-6 mb-3">
+                <a asp-page="/Provider/UpdateStatus" class="btn btn-primary btn-lg w-100 py-3">
+                    <i class="fas fa-check-circle"></i> Cập nhật Trạng thái
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="col-12 alert alert-info text-center">
+                <p>Vai trò của bạn chưa được cấu hình. Vui lòng liên hệ quản trị viên.</p>
+            </div>
+        }
+    </div>
+</div>
