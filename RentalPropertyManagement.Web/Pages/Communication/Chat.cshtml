@@ -123,49 +123,12 @@
 </div>
 
 <!-- SignalR & Chat Scripts -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
+<script src="~/lib/signalr/signalr.min.js"></script>
 <script>
     const currentUserId = @Model.CurrentUserId;
     const receiverId = @(Model.ReceiverId ?? 0);
 
-    // 1. Setup SignalR Connection
-    const connection = new signalR.HubConnectionBuilder()
-        .withUrl("/chatHub")
-        .build();
-
-    // 2. Receive Message Handler
-    connection.on("ReceiveMessage", function (senderId, message, timestamp) {
-        // Only append if it belongs to this conversation
-        // If I sent it (senderId == currentUserId) -> Append as sent
-        // If they sent it (senderId == receiverId) -> Append as received
-
-        if (senderId === currentUserId || senderId === receiverId) {
-            const msgDiv = document.createElement("div");
-            const isSent = senderId === currentUserId;
-            msgDiv.className = isSent ? "message sent" : "message received";
-
-            // Format time simply
-            const date = new Date(timestamp);
-            const timeStr = date.getHours().toString().padStart(2, '0') + ":" + date.getMinutes().toString().padStart(2, '0') + " " + date.getDate() + "/" + (date.getMonth() + 1);
-
-            msgDiv.innerHTML = `<div>${escapeHtml(message)}</div><small style="font-size: 0.7em;">${timeStr}</small>`;
-
-            const box = document.getElementById("messagesList");
-            if (box) {
-                box.appendChild(msgDiv);
-                box.scrollTop = box.scrollHeight; // Auto scroll to bottom
-            }
-        } else {
-            // Notification logic could go here (e.g. toast) for messages from other users
-            // alert("New message from user " + senderId);
-        }
-    });
-
-    connection.start().catch(function (err) {
-        return console.error(err.toString());
-    });
-
-    // 3. Send Message Handler
+    // 1. Send Message Handler (Initialized first to ensure basic functionality)
     const sendBtn = document.getElementById("sendButton");
     const msgInput = document.getElementById("messageInput");
 
@@ -203,6 +166,48 @@
 
             event.preventDefault();
         });
+    }
+
+    // 2. Setup SignalR Connection (Wrapped in try-catch for resilience)
+    if (typeof signalR !== 'undefined') {
+        try {
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/chatHub")
+                .build();
+
+            // Receive Message Handler
+            connection.on("ReceiveMessage", function (senderId, message, timestamp) {
+                // Only append if it belongs to this conversation
+                // If I sent it (senderId == currentUserId) -> Append as sent
+                // If they sent it (senderId == receiverId) -> Append as received
+
+                if (senderId === currentUserId || senderId === receiverId) {
+                    const msgDiv = document.createElement("div");
+                    const isSent = senderId === currentUserId;
+                    msgDiv.className = isSent ? "message sent" : "message received";
+
+                    // Format time simply
+                    const date = new Date(timestamp);
+                    const timeStr = date.getHours().toString().padStart(2, '0') + ":" + date.getMinutes().toString().padStart(2, '0') + " " + date.getDate() + "/" + (date.getMonth() + 1);
+
+                    msgDiv.innerHTML = `<div>${escapeHtml(message)}</div><small style="font-size: 0.7em;">${timeStr}</small>`;
+
+                    const box = document.getElementById("messagesList");
+                    if (box) {
+                        box.appendChild(msgDiv);
+                        box.scrollTop = box.scrollHeight; // Auto scroll to bottom
+                    }
+                }
+            });
+
+            connection.start().catch(function (err) {
+                console.error("SignalR Connection Error: ", err.toString());
+            });
+        } catch (e) {
+            console.warn("SignalR initialization failed. Chat will work in fallback mode (page refresh required for new messages).", e);
+        }
+    } else {
+        console.warn("SignalR library not loaded. Chat works in fallback mode.");
     }
 
     // Scroll to bottom on load
